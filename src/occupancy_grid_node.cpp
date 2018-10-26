@@ -1,29 +1,28 @@
-#include <iostream>										//cout
-#include "ros/ros.h"									//ros
-#include "sensor_msgs/LaserScan.h"						// hokuyo msgs
-#include "../include/occupancy_grid/OccupationGrid.hpp"	//grid
+#include <iostream>										// cout
+#include "ros/ros.h"									// ros
+#include "sensor_msgs/LaserScan.h"						// hokuyo laser msgs
+#include "../include/occupancy_grid/OccupationGrid.hpp"	// grid
 
+void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
+{
+	ROS_INFO("position=: [%f]", scan->ranges[270]);
+}
 
-
-void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
-
-
-int main(int argc, char** argv){
-
-	ros::NodeHandle nh;
-	ros::Subscriber scanSub;
-
-	scanSub = nh.subscribe<sensor_msgs::LaserScan>("/scan", 10, &processLaserScan);
+int main(int argc,char **argv)
+{
+	ros::init(argc,argv,"occupancy_grid_node");
+	ros::NodeHandle n;
 
 	OccupationGrid* g = new OccupationGrid();
 
-	g->Set(7, 7, 54.5f);
+	// g->Set(7, 7, 54.5f);
+	// std::cout << g->Get(7, 7) << std::endl;
 
-	std::cout << g->Get(7, 7) << std::endl;
+	//Create a subscriber object
+	ros::Subscriber sub = n.subscribe("/scan",1000, processLaserScan);
+
+	//Let ROS take over
+	ros::spin();
 
 	return 0;
-}
-
-void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan){
-    //scan->ranges[] are laser readings
 }
