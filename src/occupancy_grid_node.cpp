@@ -32,7 +32,9 @@ int main(int argc,char **argv)
 	ros::Subscriber sub = n.subscribe("/scan", 1000, processLaserScan);
 
 	// Defines robot motion publisher
-	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);
+
+	move(1, 10, 1);
 
 	//Let ROS take over
 	ros::spin();
