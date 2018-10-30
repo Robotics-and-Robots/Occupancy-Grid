@@ -1,8 +1,10 @@
 #include <iostream>										// cout
+
 #include "ros/ros.h"									// ROS
 #include "sensor_msgs/LaserScan.h"						// Hokuyo laser msgs
 #include "geometry_msgs/Twist.h"						// Twist - message for motion
-#include "../include/occupancy_grid/OccupationGrid.hpp"	// Grid class
+
+#include "../include/OccupancyGrid.h"					// Grid class
 
 // Functions
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
@@ -20,7 +22,7 @@ ros::Publisher velocity_publisher;
 */
 int main(int argc,char **argv)
 {
-	ros::init(argc,argv,"occupancy_grid_node");
+	ros::init(argc,argv,"OccupancyGridNode");
 	ros::NodeHandle n;
 
 	OccupationGrid* g = new OccupationGrid();
