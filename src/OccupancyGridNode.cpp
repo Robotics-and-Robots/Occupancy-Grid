@@ -3,15 +3,22 @@
 #include "ros/ros.h"									// ROS
 #include "sensor_msgs/LaserScan.h"						// Hokuyo laser msgs
 #include "geometry_msgs/Twist.h"						// Twist - message for motion
+#include "geometry_msgs/Pose2D.h"
+#include "nav_msgs/Odometry.h"
 
 #include "../include/OccupancyGrid.h"					// Grid class
+
+#define HOKUYO_NUM_RANGES 683
 
 // Functions
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
 void move(double, double , bool);
+void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);				// callback that updates current location (from odometry)
 
 //Global Variables
 ros::Publisher velocity_publisher;
+OccupancyGrid* g;														//global occupancy grid
+geometry_msgs::Pose2D _pos;												//global position vector
 
 /*
 *
@@ -25,16 +32,14 @@ int main(int argc,char **argv)
 	ros::init(argc,argv,"OccupancyGridNode");
 	ros::NodeHandle n;
 
-	OccupationGrid* g = new OccupationGrid();
-
 	// g->Set(7, 7, 54.5f);
 	// std::cout << g->Get(7, 7) << std::endl;
 
-	// Listening Hokuyo laser ranges info
-	ros::Subscriber sub = n.subscribe("/scan", 1000, processLaserScan);
+	ros::Subscriber subScan	= n.subscribe("/scan", 1000, processLaserScan);						// Listening Hokuyo laser ranges info
+	ros::Subscriber subOdom = n.subscribe("odom", 1000,  odomCallback);							//data from other nodes 
+	velocity_publisher 		= n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	// Defines robot motion publisher
 
-	// Defines robot motion publisher
-	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);
+ 	g = new OccupancyGrid();
 
 	move(1, 10, 1);
 
@@ -46,13 +51,25 @@ int main(int argc,char **argv)
 
 /*
 *
-*	@Author: 		Darlan Alves Jurak
+*	@Author: 		Anderson Domingues e Darlan Alves Jurak
 *	@Brief: 		Hokuyo range info "print"
 *
 */
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
 	ROS_INFO("position=: [%f]", scan->ranges[270]);
+
+	//update uccupancy grid for all ranges
+	for(int i = 0; i < HOKUYO_NUM_RANGES; i++)
+		g->SetLoc(
+			_pos.x, 
+			_pos.x, 
+			scan->ranges[i], 
+			(i * 0.36)
+		);
+
+	//print occupancy grid
+	// ROS_INFO(g->ToString().c_str());
 }
 
 /*
@@ -97,5 +114,21 @@ void move(double speed, double distance, bool isForward){
 
 	vel_msg.linear.x = 0;
 	velocity_publisher.publish(vel_msg);
+
+}
+
+/*
+*
+*	@Author: 		Anderson Domingues
+*	@Brief: 		Main function.
+* 	@Description:	Responsable for update current location (from odometry)
+*
+*/
+void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
+
+	//update location
+	_pos.x 		= msg->pose.pose.position.x;
+	_pos.y 		= msg->pose.pose.position.y;
+	// _pos.theta 	= msg->pose.pose.position.;
 
 }

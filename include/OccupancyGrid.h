@@ -3,8 +3,8 @@
 
 #include <cmath>
 
-#define OG_WIDTH  4 
-#define OG_HEIGTH 5
+#define OG_WIDTH  4
+#define OG_HEIGTH 6
 
 #define OG_SEC_W (OG_WIDTH  / 2)
 #define OG_SEC_H (OG_HEIGTH / 2)
@@ -25,14 +25,17 @@ private:
 public:
 	
 	//ctor. and dtor.
-	OccupationGrid();
-	~OccupationGrid();
+	OccupancyGrid();
+	~OccupancyGrid();
 	
 	//overload [] to access as an array
 	OGCellType Get(int x, int y);
 	
 	//set some value to a cell
 	OGCellType Set(int x, int y, OGCellType value);
+	OGCellType SetLoc(int ox, int oy, OGCellType dist, OGCellType theta);
+
+	std::string ToString();
 };
 
 #endif /* _OCCUPATION_GRID_HPP */
