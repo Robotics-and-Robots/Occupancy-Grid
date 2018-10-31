@@ -1,5 +1,5 @@
-#ifndef _OCCUPATION_GRID_HPP
-#define _OCCUPATION_GRID_HPP
+#ifndef OCCUPATION_GRID_H
+#define OCCUPATION_GRID_H
 
 #include <cmath>
 
@@ -16,26 +16,26 @@ typedef float OGCellType;
 //occupation grid. 
 class OccupancyGrid{
 
-private:
-	OGCellType _m_pospos[OG_SEC_W][OG_SEC_H]; //X is positive, Y is positive.
-	OGCellType _m_posneg[OG_SEC_W][OG_SEC_H]; //X is positive, Y is negative.
-	OGCellType _m_negpos[OG_SEC_W][OG_SEC_H]; //X is negative, Y is positive.
-	OGCellType _m_negneg[OG_SEC_W][OG_SEC_H]; //X is negative, Y is negetive.
+	private:
+		OGCellType _m_pospos[OG_SEC_W][OG_SEC_H]; //X is positive, Y is positive.
+		OGCellType _m_posneg[OG_SEC_W][OG_SEC_H]; //X is positive, Y is negative.
+		OGCellType _m_negpos[OG_SEC_W][OG_SEC_H]; //X is negative, Y is positive.
+		OGCellType _m_negneg[OG_SEC_W][OG_SEC_H]; //X is negative, Y is negetive.
 
-public:
+	public:
 	
-	//ctor. and dtor.
-	OccupancyGrid();
-	~OccupancyGrid();
-	
-	//overload [] to access as an array
-	OGCellType Get(int x, int y);
-	
-	//set some value to a cell
-	OGCellType Set(int x, int y, OGCellType value);
-	OGCellType SetLoc(int ox, int oy, OGCellType dist, OGCellType theta);
+		//ctor. and dtor.
+		OccupancyGrid();
+		~OccupancyGrid();
+		
+		//overload [] to access as an array
+		OGCellType Get(int x, int y);
+		
+		//set some value to a cell
+		OGCellType Set(int x, int y, OGCellType value);
+		OGCellType SetLoc(int ox, int oy, OGCellType dist, OGCellType theta);
 
-	std::string ToString();
+		std::string ToString();
 };
 
-#endif /* _OCCUPATION_GRID_HPP */
+#endif /* OCCUPATION_GRID_H */

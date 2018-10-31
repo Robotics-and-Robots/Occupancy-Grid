@@ -1,6 +1,8 @@
 #include <sstream>
-
 #include "../include/OccupancyGrid.h"
+
+OccupancyGrid::OccupancyGrid(){}
+OccupancyGrid::~OccupancyGrid(){}
 
 OGCellType OccupancyGrid::Get(int x, int y){
 
@@ -35,9 +37,6 @@ OGCellType OccupancyGrid::SetLoc(int ox, int oy, OGCellType dist, OGCellType the
 		1
 	);
 }
-
-OccupancyGrid::OccupancyGrid(){}
-OccupancyGrid::~OccupancyGrid(){}
 
 std::string OccupancyGrid::ToString(){
 
