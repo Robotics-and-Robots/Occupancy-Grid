@@ -14,6 +14,8 @@
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
 void move(double, double , bool);
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);				// callback that updates current location (from odometry)
+void toEulerAngle(double x, double y, double z, double w, double* yaw);	// Function to convert from quarternion to euler angle 
+
 
 //Global Variables
 ros::Publisher velocity_publisher;
@@ -129,6 +131,22 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
 	//update location
 	_pos.x 		= msg->pose.pose.position.x;
 	_pos.y 		= msg->pose.pose.position.y;
-	// _pos.theta 	= msg->pose.pose.position.;
 
+	//update angle
+	toEulerAngle(
+		msg->pose.pose.orientation.x, 
+		msg->pose.pose.orientation.y,
+		msg->pose.pose.orientation.z,
+		msg->pose.pose.orientation.w,
+		&_pos.theta
+	);
+
+}
+
+// Function to convert from quarternion to euler angle 
+// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
+void toEulerAngle(double x, double y, double z, double w, double* yaw){
+	double siny = +2.0 * (w * z + x * y);
+	double cosy = +1.0 - 2.0 * (y * y + z * z);  
+	*yaw = atan2(siny, cosy);
 }
