@@ -1,5 +1,5 @@
-#ifndef _OCCUPATION_GRID_HPP
-#define _OCCUPATION_GRID_HPP
+#ifndef _OCCUPATION_GRID_H
+#define _OCCUPATION_GRID_H
 
 #include <cmath>
 
@@ -38,4 +38,4 @@ public:
 	std::string ToString();
 };
 
-#endif /* _OCCUPATION_GRID_HPP */
+#endif /* _OCCUPATION_GRID_H */
