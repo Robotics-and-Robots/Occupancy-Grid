@@ -1,3 +1,10 @@
+/*
+*
+*	@Author: 		Anderson Domingues e Darlan Alves Jurak
+*	@Brief: 		Main ROS node for Occupancy Grid generation
+*
+*/
+
 #include <iostream>										// cout
 
 #include "ros/ros.h"									// ROS
@@ -18,7 +25,7 @@ void toEulerAngle(double x, double y, double z, double w, double* yaw);	// Funct
 
 
 //Global Variables
-ros::Publisher velocity_publisher;
+ros::Publisher pub_velocity;
 OccupancyGrid* g;														//global occupancy grid
 geometry_msgs::Pose2D _pos;												//global position vector
 
@@ -37,13 +44,13 @@ int main(int argc,char **argv)
 	// g->Set(7, 7, 54.5f);
 	// std::cout << g->Get(7, 7) << std::endl;
 
-	ros::Subscriber subScan	= n.subscribe("/scan", 1000, processLaserScan);						// Listening Hokuyo laser ranges info
-	ros::Subscriber subOdom = n.subscribe("odom", 1000,  odomCallback);							//data from other nodes 
-	velocity_publisher 		= n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	// Defines robot motion publisher
+	ros::Subscriber sub_scan	= n.subscribe("/scan", 1000, processLaserScan);						// Listening Hokuyo laser ranges info
+	ros::Subscriber sub_odom 	= n.subscribe("odom", 1000,  odomCallback);							//data from other nodes 
+	pub_velocity 				= n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	// Defines robot motion publisher
 
  	g = new OccupancyGrid();
 
-	move(1, 10, 1);
+	// move(1, 1, 1);
 
 	//Let ROS take over
 	ros::spin();
@@ -62,15 +69,15 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	ROS_INFO("position=: [%f]", scan->ranges[270]);
 
 	//update uccupancy grid for all ranges
-	for(int i = 0; i < HOKUYO_NUM_RANGES; i++){
-		g->SetLoc(
-			_pos.x, 
-			_pos.x, 
-			scan->ranges[i], 
-			(i * 0.36)
-		);
+	// for(int i = 0; i < HOKUYO_NUM_RANGES; i++){
+	// 	g->SetLoc(
+	// 		_pos.x, 
+	// 		_pos.x, 
+	// 		scan->ranges[i], 
+	// 		(i * 0.36)
+	// 	);
 
-	}
+	// }
 
 	//print occupancy grid
 	// ROS_INFO(g->ToString().c_str());
@@ -108,7 +115,7 @@ void move(double speed, double distance, bool isForward){
 	ros::Rate loop_rate(10);
 	do{
 
-		velocity_publisher.publish(vel_msg);	// Moves robot
+		pub_velocity.publish(vel_msg);	// Moves robot
 		double t1 = ros::Time::now().toSec();	// Get current time
 		current_distance = speed * (t1 - t0);	// Updates travelled distance estimation
 
@@ -117,7 +124,7 @@ void move(double speed, double distance, bool isForward){
 	}while( current_distance < distance);
 
 	vel_msg.linear.x = 0;
-	velocity_publisher.publish(vel_msg);
+	pub_velocity.publish(vel_msg);
 
 }
 
