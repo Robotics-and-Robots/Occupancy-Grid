@@ -6,13 +6,13 @@
 
 using namespace geometry_msgs;
 
-#define UNIT_FIX 50 /* means 1 unit from hokuyo scales up to 2x while in the grid */
+#define UNIT_FIX 150 /* means 1 unit from hokuyo scales up to X while in the grid */
 
-#define OG_WIDTH  100
-#define OG_HEIGTH 100
+#define OG_WIDTH (2 * UNIT_FIX)
+#define OG_HEIGHT (2 * UNIT_FIX)
 
 #define OG_SEC_W (OG_WIDTH  / 2)
-#define OG_SEC_H (OG_HEIGTH / 2)
+#define OG_SEC_H (OG_HEIGHT / 2)
 
 //Cell elements are float-typed values
 typedef double OGCellType;

@@ -124,7 +124,7 @@ void OccupancyGrid::ToFile(std::string filename){
 	   << "<body style='background:black;'>\n"
 	   << "<div style='text-align:center;margin:auto;'>\n"
        << "<h3 style='color:white;font-family:sans'>Occupancy Grid</h3><br />\n"
-	   << "<svg style='width:400px; height:400px; diaply:block; margin:auto'>\n";
+	   << "<svg style='width:" << (OG_WIDTH*4) << "px; height:" << (OG_HEIGHT*4) << "px; diaply:block; margin:auto'>\n";
 	int w = 0; 
 	int h = 0;
 	for(int y = OG_SEC_H; y > -OG_SEC_H; y--){
