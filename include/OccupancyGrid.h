@@ -2,6 +2,9 @@
 #define OCCUPATION_GRID_H
 
 #include <cmath>
+#include "geometry_msgs/Pose2D.h"
+
+using namespace geometry_msgs;
 
 #define OG_WIDTH  4
 #define OG_HEIGTH 6
@@ -33,7 +36,7 @@ class OccupancyGrid{
 		
 		//set some value to a cell
 		OGCellType Set(int x, int y, OGCellType value);
-		OGCellType SetLoc(int ox, int oy, OGCellType dist, OGCellType theta);
+		OGCellType SetLoc(Pose2D pose, OGCellType dist, OGCellType theta);
 
 		std::string ToString();
 };

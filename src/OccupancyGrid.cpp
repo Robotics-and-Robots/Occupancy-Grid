@@ -1,6 +1,9 @@
 #include <sstream>
 #include "../include/OccupancyGrid.h"
 
+
+using namespace geometry_msgs;
+
 OccupancyGrid::OccupancyGrid(){}
 OccupancyGrid::~OccupancyGrid(){}
 
@@ -26,14 +29,14 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType value){
 	else return _m_negneg[a][b] = value;
 }
 
-OGCellType OccupancyGrid::SetLoc(int ox, int oy, OGCellType dist, OGCellType theta){
+OGCellType OccupancyGrid::SetLoc(Pose2D pose, OGCellType dist, OGCellType theta){
 
-	OGCellType hDist = cos(theta) * dist; //horizontal distance
-	OGCellType vDist = sin(theta) * dist; //vertical distance
+	OGCellType hDist = cos(theta + pose.theta) * dist; //horizontal distance
+	OGCellType vDist = sin(theta + pose.theta) * dist; //vertical distance
 
 	this->Set(
-		ox + hDist,
-		oy + vDist,
+		pose.x + hDist,
+		pose.y + vDist,
 		1
 	);
 }

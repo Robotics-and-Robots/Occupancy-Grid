@@ -17,6 +17,8 @@
 
 #define HOKUYO_NUM_RANGES 683
 
+using namespace geometry_msgs;
+
 // Functions
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
 void move(double, double , bool);
@@ -58,7 +60,7 @@ int main(int argc,char **argv)
 	return 0;
 }
 
-/*
+/*using namespace geometry_msgs;
 *
 *	@Author: 		Anderson Domingues e Darlan Alves Jurak
 *	@Brief: 		Hokuyo range info "print"
@@ -69,15 +71,14 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	ROS_INFO("position=: [%f]", scan->ranges[270]);
 
 	//update uccupancy grid for all ranges
-	// for(int i = 0; i < HOKUYO_NUM_RANGES; i++){
-	// 	g->SetLoc(
-	// 		_pos.x, 
-	// 		_pos.x, 
-	// 		scan->ranges[i], 
-	// 		(i * 0.36)
-	// 	);
+	for(int i = 0; i < HOKUYO_NUM_RANGES; i++){
+	 	g->SetLoc(
+			_pos, 
+	 		scan->ranges[i], 
+	 		(i * 0.36)
+		);
 
-	// }
+	}
 
 	//print occupancy grid
 	// ROS_INFO(g->ToString().c_str());
