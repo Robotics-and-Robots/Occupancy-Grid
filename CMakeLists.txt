@@ -198,3 +198,4 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+set(CMAKE_BUILD_TYPE Debug)

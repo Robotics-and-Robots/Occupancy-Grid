@@ -6,39 +6,44 @@
 
 using namespace geometry_msgs;
 
-#define OG_WIDTH  4
-#define OG_HEIGTH 6
+#define UNIT_FIX 50 /* means 1 unit from hokuyo scales up to 2x while in the grid */
+
+#define OG_WIDTH  100
+#define OG_HEIGTH 100
 
 #define OG_SEC_W (OG_WIDTH  / 2)
 #define OG_SEC_H (OG_HEIGTH / 2)
 
 //Cell elements are float-typed values
-typedef float OGCellType;
+typedef double OGCellType;
 
 //Defines a class to hold values for an
 //occupation grid. 
 class OccupancyGrid{
 
-	private:
-		OGCellType _m_pospos[OG_SEC_W][OG_SEC_H]; //X is positive, Y is positive.
-		OGCellType _m_posneg[OG_SEC_W][OG_SEC_H]; //X is positive, Y is negative.
-		OGCellType _m_negpos[OG_SEC_W][OG_SEC_H]; //X is negative, Y is positive.
-		OGCellType _m_negneg[OG_SEC_W][OG_SEC_H]; //X is negative, Y is negetive.
+private:
+	OGCellType _m_pospos[OG_SEC_W][OG_SEC_H]; //X is positive, Y is positive.
+	OGCellType _m_posneg[OG_SEC_W][OG_SEC_H]; //X is positive, Y is negative.
+	OGCellType _m_negpos[OG_SEC_W][OG_SEC_H]; //X is negative, Y is positive.
+	OGCellType _m_negneg[OG_SEC_W][OG_SEC_H]; //X is negative, Y is negetive.
 
-	public:
+public:
+
+	//ctor. and dtor.
+	OccupancyGrid();
+	~OccupancyGrid();
 	
-		//ctor. and dtor.
-		OccupancyGrid();
-		~OccupancyGrid();
-		
-		//overload [] to access as an array
-		OGCellType Get(int x, int y);
-		
-		//set some value to a cell
-		OGCellType Set(int x, int y, OGCellType value);
-		OGCellType SetLoc(Pose2D pose, OGCellType dist, OGCellType theta);
+	//overload [] to access as an array
+	OGCellType Get(int x, int y);
+	
+	//set some value to a cell
+	OGCellType Set(int x, int y, OGCellType value);
+	OGCellType SetLoc(Pose2D pose, OGCellType dist, OGCellType theta);
 
-		std::string ToString();
+	void Reset();
+
+	std::string ToString();
+	void ToFile(std::string filename);
 };
 
 #endif /* OCCUPATION_GRID_H */

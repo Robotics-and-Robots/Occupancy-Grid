@@ -15,7 +15,11 @@
 
 #include "../include/OccupancyGrid.h"					// Grid class
 
-#define HOKUYO_NUM_RANGES 683
+#define HOKUYO_ANGLE_MIN -2.356194
+#define HOKUYO_ANGLE_MAX  2.092350
+#define HOKUYO_ANGLE_INC  0.006136
+#define HOKUYO_RANGE_MIN  0.02
+#define HOKUYO_RANGE_MAX  5.60
 
 using namespace geometry_msgs;
 
@@ -28,8 +32,12 @@ void toEulerAngle(double x, double y, double z, double w, double* yaw);	// Funct
 
 //Global Variables
 ros::Publisher pub_velocity;
-OccupancyGrid* g;														//global occupancy grid
-geometry_msgs::Pose2D _pos;												//global position vector
+
+//global occupancy grid
+OccupancyGrid* g;
+														
+//global position vector
+geometry_msgs::Pose2D _pos;												
 
 /*
 *
@@ -46,9 +54,14 @@ int main(int argc,char **argv)
 	// g->Set(7, 7, 54.5f);
 	// std::cout << g->Get(7, 7) << std::endl;
 
-	ros::Subscriber sub_scan	= n.subscribe("/scan", 1000, processLaserScan);						// Listening Hokuyo laser ranges info
-	ros::Subscriber sub_odom 	= n.subscribe("odom", 1000,  odomCallback);							//data from other nodes 
-	pub_velocity 				= n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	// Defines robot motion publisher
+	// Listening Hokuyo laser ranges info
+	ros::Subscriber sub_scan = n.subscribe("/scan", 100, processLaserScan);
+
+	//data from other nodes						
+	ros::Subscriber sub_odom = n.subscribe("/odom", 1000, odomCallback);
+
+	// Defines robot motion publisher
+	pub_velocity = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	
 
  	g = new OccupancyGrid();
 
@@ -68,20 +81,35 @@ int main(int argc,char **argv)
 */
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
-	ROS_INFO("position=: [%f]", scan->ranges[270]);
+	double reading; 
 
+	//set all values from grid to zeroes
+	g->Reset();
+
+	//ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
+	//ROS_INFO("angle_increment [%f]", scan->angle_increment);
+	//ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
+	
 	//update uccupancy grid for all ranges
-	for(int i = 0; i < HOKUYO_NUM_RANGES; i++){
-	 	g->SetLoc(
-			_pos, 
-	 		scan->ranges[i], 
-	 		(i * 0.36)
-		);
+	double i = HOKUYO_ANGLE_MAX;
+	int j = 0;
+	while(i >= HOKUYO_ANGLE_MIN){
+	 	
+		reading = scan->ranges[j];
 
+		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading))
+			g->SetLoc(
+				_pos,
+				reading, //value read
+				i //angle
+			);
+
+		i -= HOKUYO_ANGLE_INC;
+		j++;
 	}
 
-	//print occupancy grid
-	// ROS_INFO(g->ToString().c_str());
+	//save occupancy grid to file
+	g->ToFile("/home/lsa/Desktop/filename.html");
 }
 
 /*
@@ -130,11 +158,9 @@ void move(double speed, double distance, bool isForward){
 }
 
 /*
-*
 *	@Author: 		Anderson Domingues
 *	@Brief: 		Main function.
 * 	@Description:	Responsable for update current location (from odometry)
-*
 */
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
 
@@ -148,9 +174,10 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
 		msg->pose.pose.orientation.y,
 		msg->pose.pose.orientation.z,
 		msg->pose.pose.orientation.w,
-		&_pos.theta
+		&_pos.theta //already in radians
 	);
 
+	//ROS_INFO("position=: [%f] [%f] ([%f])", _pos.x, _pos.y, _pos.theta);
 }
 
 // Function to convert from quarternion to euler angle 
@@ -159,4 +186,5 @@ void toEulerAngle(double x, double y, double z, double w, double* yaw){
 	double siny = +2.0 * (w * z + x * y);
 	double cosy = +1.0 - 2.0 * (y * y + z * z);  
 	*yaw = atan2(siny, cosy);
+	//*yaw = (*yaw * M_PI) / 180; //to radians
 }
