@@ -96,8 +96,8 @@ OGCellType OccupancyGrid::SetLoc(Pose2D pose, OGCellType dist, OGCellType theta)
 	double curr_val;
 	curr_val = this->Get(x_coord, y_coord);		
 			
-	if(curr_val == HMMI_THRESHOULD)
-		return HMMI_THRESHOULD;
+	if(curr_val == HIMM_THRESHOLD_MAX)
+		return HIMM_THRESHOLD_MIN;
 
 	return this->Set(
 		(pose.x + hDist) * UNIT_FIX,
@@ -145,7 +145,7 @@ void OccupancyGrid::ToFile(std::string filename){
 
 			if (this->Get(x, y) > 0)
 			    ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='3' " 
-                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / HMMI_THRESHOULD)) << "0000' />";
+                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN))) << "0000' />";
 			else if(x == 0 || y == 0)
 				ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='1' " 
                    << "stroke='gray' />";

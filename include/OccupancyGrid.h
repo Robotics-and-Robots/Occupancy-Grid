@@ -14,7 +14,8 @@ using namespace geometry_msgs;
 #define OG_SEC_W (OG_WIDTH  / 2)
 #define OG_SEC_H (OG_HEIGHT / 2)
 
-#define HMMI_THRESHOULD 30
+#define HIMM_THRESHOLD_MAX 30
+#define HIMM_THRESHOLD_MIN 0
 
 //Cell elements are float-typed values
 typedef double OGCellType;
