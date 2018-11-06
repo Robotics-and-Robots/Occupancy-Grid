@@ -85,27 +85,40 @@ OGCellType OccupancyGrid::SetLoc(Pose2D pose, OGCellType dist, OGCellType theta)
 	//pose.y = pose.y * UNIT_FIX;
 
 	OGCellType hDist = cos(odom_theta) * dist; //horizontal distance
-	OGCellType vDist = sin(odom_theta) * dist; //vertical distance
+	OGCellType wDist = sin(odom_theta) * dist; //vertical distance
 
 	//ROS_INFO("position x=[%f] y=[%f] angle=[%f] dist=[%f], theta=[%f]",
 		//pose.x + hDist, pose.x + hDist, pose.theta, dist, theta);
 
+	int x_coord = (pose.x + hDist) * UNIT_FIX;
+	int y_coord = (pose.y + wDist) * UNIT_FIX;
+
+	double curr_val;
+	curr_val = this->Get(x_coord, y_coord);		
+			
+	if(curr_val == HMMI_THRESHOULD)
+		return HMMI_THRESHOULD;
+
 	return this->Set(
 		(pose.x + hDist) * UNIT_FIX,
-		(pose.y + vDist) * UNIT_FIX,
-		1
+		(pose.y + wDist) * UNIT_FIX,
+		curr_val + 1
 	);
 }
-
-
 
 /**
  * Set all cell values to zeroes
  */
 void OccupancyGrid::Reset(){
-	for(int y = OG_SEC_H; y > -OG_SEC_H; y--)
-		for(int x = -OG_SEC_W; x < OG_SEC_W; x++)
-			this->Set(x, y, 0);
+	for(int y = OG_SEC_H; y > -OG_SEC_H; y--){
+		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
+
+			double curr_val;
+			curr_val = this->Get(x, y);
+			curr_val = (curr_val > 0) ? (curr_val - 1) : 0;
+			this->Set(x, y, curr_val);
+		}
+	}
 }
 
 /**
@@ -132,7 +145,7 @@ void OccupancyGrid::ToFile(std::string filename){
 
 			if (this->Get(x, y) > 0)
 			    ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='3' " 
-                   << "stroke='green' />";
+                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / HMMI_THRESHOULD)) << "0000' />";
 			else if(x == 0 || y == 0)
 				ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='1' " 
                    << "stroke='gray' />";

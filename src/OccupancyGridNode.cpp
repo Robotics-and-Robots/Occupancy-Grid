@@ -21,6 +21,8 @@
 #define HOKUYO_RANGE_MIN  0.02
 #define HOKUYO_RANGE_MAX  5.60
 
+#define HMMI_THRESHOULD 30
+
 using namespace geometry_msgs;
 
 // Functions
