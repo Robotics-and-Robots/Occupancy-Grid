@@ -4,18 +4,11 @@
 #include <cmath>
 #include "geometry_msgs/Pose2D.h"
 
+#include "Vector2D.hpp"
+#include "Constants.h"
+
 using namespace geometry_msgs;
 
-#define UNIT_FIX 150 /* means 1 unit from hokuyo scales up to X while in the grid */
-
-#define OG_WIDTH (2 * UNIT_FIX)
-#define OG_HEIGHT (2 * UNIT_FIX)
-
-#define OG_SEC_W (OG_WIDTH  / 2)
-#define OG_SEC_H (OG_HEIGHT / 2)
-
-#define HIMM_THRESHOLD_MAX 30
-#define HIMM_THRESHOLD_MIN 0
 
 //Cell elements are float-typed values
 typedef double OGCellType;

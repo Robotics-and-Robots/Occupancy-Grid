@@ -13,64 +13,57 @@
 #include "geometry_msgs/Pose2D.h"
 #include "nav_msgs/Odometry.h"
 
-#include "../include/OccupancyGrid.h"					// Grid class
+//configurations
+#include "../include/Constants.h"
 
-#define HOKUYO_ANGLE_MIN -2.356194
-#define HOKUYO_ANGLE_MAX  2.092350
-#define HOKUYO_ANGLE_INC  0.006136
-#define HOKUYO_RANGE_MIN  0.02
-#define HOKUYO_RANGE_MAX  5.60
-
-#define HIMM_THRESHOLD_MAX 30
-#define HIMM_THRESHOLD_MIN 0
+//algorithms and data structures
+#include "../include/OccupancyGrid.h"
+#include "../include/PotentialFields.h"
+#include "../include/Hmmi.h"
 
 using namespace geometry_msgs;
 
-// Functions
+//Prototypes
 void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
 void move(double, double , bool);
-void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);				// callback that updates current location (from odometry)
-void toEulerAngle(double x, double y, double z, double w, double* yaw);	// Function to convert from quarternion to euler angle 
-
+void odomCallback(const nav_msgs::Odometry::ConstPtr& msg); 
+double toEulerAngle(double x, double y, double z, double w);
 
 //Global Variables
 ros::Publisher pub_velocity;
 
-//global occupancy grid
-OccupancyGrid* g;
+//global occupancy grid, hmmi and potential fields
+OccupancyGrid& _occupancy_grid;
+PotentialFields& _potential_fields;
+Hmmi& _hmmi;
 														
-//global position vector
-geometry_msgs::Pose2D _pos;												
+//global position vector (updated in odom callback)
+geometry_msgs::Pose2D _pos;
 
-/*
-*
-*	@Author: 		Anderson Domingues e Darlan Alves Jurak
-*	@Brief: 		Main function.
-* 	@Description:	Responsable for robot motion control and mapping filling.
-*
-*/
+/**
+ * Responsable for robot motion control and mapping filling.
+ * @author Anderson Domingues and Darlan Alves Jurak
+ */
 int main(int argc,char **argv)
 {
 	ros::init(argc,argv,"OccupancyGridNode");
 	ros::NodeHandle n;
 
-	// g->Set(7, 7, 54.5f);
-	// std::cout << g->Get(7, 7) << std::endl;
-
-	// Listening Hokuyo laser ranges info
+	//subscribe to Hokuyo node (laser)
 	ros::Subscriber sub_scan = n.subscribe("/scan", 100, processLaserScan);
 
-	//data from other nodes						
+	//subscribe to Odom node (odometry and movement)
 	ros::Subscriber sub_odom = n.subscribe("/odom", 1000, odomCallback);
 
 	// Defines robot motion publisher
 	pub_velocity = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	
 
- 	g = new OccupancyGrid();
+	//instantiates a new occupancy grid, hmmi and potential fields algorithms
+ 	_occupancy_grid = OccupancyGrid();
+    _hmmi = Hmmi(_occupancy_grid);
+	_potential_fields = PotentialFields(_occupancy_grid);
 
-	// move(1, 1, 1);
-
-	//Let ROS take over
+	// Let ROS take over
 	ros::spin();
 
 	return 0;
@@ -87,7 +80,7 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	double reading; 
 
 	//set all values from grid to zeroes
-	g->Reset();
+	//g->Reset();
 
 	//ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
 	//ROS_INFO("angle_increment [%f]", scan->angle_increment);
@@ -100,12 +93,14 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	 	
 		reading = scan->ranges[j];
 
-		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading))
+		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading)){
+		
 			g->SetLoc(
 				_pos,
 				reading, //value read
 				i //angle
 			);
+		}
 
 		i -= HOKUYO_ANGLE_INC;
 		j++;
@@ -172,22 +167,28 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
 	_pos.y 		= msg->pose.pose.position.y;
 
 	//update angle
-	toEulerAngle(
+	_pos.theta = toEulerAngle(
 		msg->pose.pose.orientation.x, 
 		msg->pose.pose.orientation.y,
 		msg->pose.pose.orientation.z,
-		msg->pose.pose.orientation.w,
-		&_pos.theta //already in radians
+		msg->pose.pose.orientation.w //already in radians
 	);
 
 	//ROS_INFO("position=: [%f] [%f] ([%f])", _pos.x, _pos.y, _pos.theta);
 }
 
-// Function to convert from quarternion to euler angle 
-// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
-void toEulerAngle(double x, double y, double z, double w, double* yaw){
+// 
+/**
+ * Function to convert from quarternion to euler angle 
+ * https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
+ * @param x Quarternion.x
+ * @param y Quarternion.y
+ * @param z Quarternion.z
+ * @param w Quarternion.w
+ * @param yaw Pointer to the variable to be written with the eulerian 
+ * value associated with the given quarternion */
+double toEulerAngle(double x, double y, double z, double w){
 	double siny = +2.0 * (w * z + x * y);
 	double cosy = +1.0 - 2.0 * (y * y + z * z);  
-	*yaw = atan2(siny, cosy);
-	//*yaw = (*yaw * M_PI) / 180; //to radians
+	return atan2(siny, cosy); 
 }

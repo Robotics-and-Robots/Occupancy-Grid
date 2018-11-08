@@ -47,63 +47,10 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType value){
 	if(b >= OG_SEC_H) return 0;
 
 	//return values for x-positive slice of grid
-	if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] = value) : (_m_posneg[a][b] = value);
+	if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] = cvalue) : (_m_posneg[a][b] = cvalue);
 
 	//return values for x-negative slice of grid
-	return (y >= 0) ? (_m_negpos[a][b] = value) : (_m_negneg[a][b] = value);
-}
-
-/**
- * Set a value to the grid according to the position of the robot
- * @param pose A Pose2D struct representing the position and rotation of the robot
- * @param dist The distance captured by the sensor
- * @param theta The inclination of the laser ray during the reading in degrees
- * @returns The value written to the cell
- */
-OGCellType OccupancyGrid::SetLoc(Pose2D pose, OGCellType dist, OGCellType theta){
-
-	double odom_theta;
-	if(pose.theta < 0)
-		odom_theta = (2 * M_PI) - std::abs(pose.theta);
-	else 
-		odom_theta = pose.theta;
-
-	double calc_theta;
-	if(theta < 0)
-		calc_theta = (2 * M_PI) - std::abs(theta);
-	else
-		calc_theta = theta;
-
-	//angle correction (neg to pos rad values)
-	odom_theta -= calc_theta;
-
-	if(odom_theta < 0)
-		odom_theta  = (2 * M_PI) - std::abs(odom_theta);
-
-	//scale correction
-	//pose.x = pose.x * UNIT_FIX;
-	//pose.y = pose.y * UNIT_FIX;
-
-	OGCellType hDist = cos(odom_theta) * dist; //horizontal distance
-	OGCellType wDist = sin(odom_theta) * dist; //vertical distance
-
-	//ROS_INFO("position x=[%f] y=[%f] angle=[%f] dist=[%f], theta=[%f]",
-		//pose.x + hDist, pose.x + hDist, pose.theta, dist, theta);
-
-	int x_coord = (pose.x + hDist) * UNIT_FIX;
-	int y_coord = (pose.y + wDist) * UNIT_FIX;
-
-	double curr_val;
-	curr_val = this->Get(x_coord, y_coord);		
-			
-	if(curr_val == HIMM_THRESHOLD_MAX)
-		return HIMM_THRESHOLD_MIN;
-
-	return this->Set(
-		(pose.x + hDist) * UNIT_FIX,
-		(pose.y + wDist) * UNIT_FIX,
-		curr_val + 1
-	);
+	return (y >= 0) ? (_m_negpos[a][b] = cvalue) : (_m_negneg[a][b] = cvalue);
 }
 
 /**
@@ -145,7 +92,7 @@ void OccupancyGrid::ToFile(std::string filename){
 
 			if (this->Get(x, y) > 0)
 			    ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='3' " 
-                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN))) << "0000' />";
+                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN))) << "FFFF' />";
 			else if(x == 0 || y == 0)
 				ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='1' " 
                    << "stroke='gray' />";
