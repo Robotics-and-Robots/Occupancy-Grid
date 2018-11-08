@@ -1,6 +1,9 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
+//type be used within cells of occupancy grids
+typedef OGCellType double
+
 //@TODO verify
 #define UNIT_FIX 150 
 

@@ -9,6 +9,10 @@ Himm::Himm(OccupancyGrid& grid){
 	this->_grid = grid;
 }
 
+Himm::ToFile(std::string filename){
+	this->_grid->ToFile(filename);
+}
+
 Himm::~Himm(){}
 
 /**

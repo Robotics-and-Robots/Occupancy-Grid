@@ -60,7 +60,7 @@ int main(int argc,char **argv)
 
 	//instantiates a new occupancy grid, hmmi and potential fields algorithms
  	_occupancy_grid = OccupancyGrid();
-    _hmmi = Hmmi(_occupancy_grid);
+	_hmmi = Hmmi(_occupancy_grid);
 	_potential_fields = PotentialFields(_occupancy_grid);
 
 	// Let ROS take over
@@ -79,9 +79,6 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
 	double reading; 
 
-	//set all values from grid to zeroes
-	//g->Reset();
-
 	//ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
 	//ROS_INFO("angle_increment [%f]", scan->angle_increment);
 	//ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
@@ -89,17 +86,13 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	//update uccupancy grid for all ranges
 	double i = HOKUYO_ANGLE_MAX;
 	int j = 0;
+
 	while(i >= HOKUYO_ANGLE_MIN){
 	 	
 		reading = scan->ranges[j];
 
-		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading)){
-		
-			g->SetLoc(
-				_pos,
-				reading, //value read
-				i //angle
-			);
+		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading){
+			_himm->UpdateLocation(_pos, reading, i);
 		}
 
 		i -= HOKUYO_ANGLE_INC;
@@ -107,7 +100,11 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	}
 
 	//save occupancy grid to file
-	g->ToFile("/home/lsa/Desktop/filename.html");
+	_hmmi->ToFile("/home/lsa/Desktop/_hmmi.html");
+
+	//recalculate routes using potential fields and print to file
+	_potential_fields->UpdateRoutes();
+	_potential_fields->ToFile("/home/lsa/Desktop/filename.html");
 }
 
 /*
