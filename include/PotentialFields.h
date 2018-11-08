@@ -6,18 +6,19 @@
 class PotentialFields{
 
 private:
-	OccupancyGrid& _grid;
-	OccupancyGrid& _temp_grid;
-	updateTempGrid();
+	OccupancyGrid* _grid;
+	OccupancyGrid* _temp_grid;
 public:
-	PotentialFields(OccupancyGrid& grid);
+	PotentialFields(OccupancyGrid* grid);
 	~PotentialFields();
 
 	/** Get the next coordinate to walk given current
       * location and a target location */
-	GetNextPosition(Pose2D pose, Pose2D);
+	Pose2D GetNextPosition(Pose2D pose, Pose2D);
+	
+	void ToFile(std::string filename);
 
-
-}
+	void UpdateRoutes();
+};
 
 #endif

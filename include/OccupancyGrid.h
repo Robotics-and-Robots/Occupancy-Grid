@@ -9,7 +9,6 @@
 
 using namespace geometry_msgs;
 
-
 //Cell elements are float-typed values
 typedef double OGCellType;
 

@@ -19,7 +19,7 @@
 //algorithms and data structures
 #include "../include/OccupancyGrid.h"
 #include "../include/PotentialFields.h"
-#include "../include/Hmmi.h"
+#include "../include/Himm.h"
 
 using namespace geometry_msgs;
 
@@ -33,9 +33,9 @@ double toEulerAngle(double x, double y, double z, double w);
 ros::Publisher pub_velocity;
 
 //global occupancy grid, hmmi and potential fields
-OccupancyGrid& _occupancy_grid;
-PotentialFields& _potential_fields;
-Hmmi& _hmmi;
+OccupancyGrid* _occupancy_grid;
+PotentialFields* _potential_fields;
+Himm* _himm;
 														
 //global position vector (updated in odom callback)
 geometry_msgs::Pose2D _pos;
@@ -59,9 +59,9 @@ int main(int argc,char **argv)
 	pub_velocity = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	
 
 	//instantiates a new occupancy grid, hmmi and potential fields algorithms
- 	_occupancy_grid = OccupancyGrid();
-	_hmmi = Hmmi(_occupancy_grid);
-	_potential_fields = PotentialFields(_occupancy_grid);
+ 	_occupancy_grid = new OccupancyGrid();
+	_himm = new Himm(_occupancy_grid);
+	_potential_fields = new PotentialFields(_occupancy_grid);
 
 	// Let ROS take over
 	ros::spin();
@@ -91,7 +91,7 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	 	
 		reading = scan->ranges[j];
 
-		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading){
+		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading)){
 			_himm->UpdateLocation(_pos, reading, i);
 		}
 
@@ -100,7 +100,7 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	}
 
 	//save occupancy grid to file
-	_hmmi->ToFile("/home/lsa/Desktop/_hmmi.html");
+	_himm->ToFile("/home/lsa/Desktop/_himm.html");
 
 	//recalculate routes using potential fields and print to file
 	_potential_fields->UpdateRoutes();

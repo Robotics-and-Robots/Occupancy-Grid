@@ -38,7 +38,7 @@ OGCellType OccupancyGrid::Get(int x, int y){
  * @param value value to be written into the cell
  * @returns the value written to the cell (must be the same as value param)
  */
-OGCellType OccupancyGrid::Set(int x, int y, OGCellType value){
+OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	
 	int a = std::abs(x);
 	int b = std::abs(y);

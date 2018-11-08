@@ -1,15 +1,15 @@
-#include "../Himm.h"
+#include "../include/Himm.h"
 
 /**
  * Ctor.
  * @grid Reference to the grid in which the hmmi
  * will read and write values.
  */
-Himm::Himm(OccupancyGrid& grid){
+Himm::Himm(OccupancyGrid* grid){
 	this->_grid = grid;
 }
 
-Himm::ToFile(std::string filename){
+void Himm::ToFile(std::string filename){
 	this->_grid->ToFile(filename);
 }
 

@@ -1,10 +1,10 @@
-#include "PotentialFields.h"
+#include "../include/PotentialFields.h"
 
-void PotentialFields::updateTempGrid(){
+void PotentialFields::UpdateRoutes(){
 
 }
 
-PotentialFields::PotentialFields(OccupancyGrid& grid){
+PotentialFields::PotentialFields(OccupancyGrid* grid){
 	this->_grid = grid;
 }
 
@@ -12,6 +12,10 @@ PotentialFields::~PotentialFields(){}
 
 /** Get the next coordinate to walk given current
   * location and a target location */
-PotentialFields:GetNextPosition(Pose2D pose, Pose2D){
+Pose2D PotentialFields::GetNextPosition(Pose2D pose, Pose2D){
 	//algorithm here
+}
+
+void PotentialFields::ToFile(std::string filename){
+
 }
