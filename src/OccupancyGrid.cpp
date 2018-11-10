@@ -47,10 +47,55 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	if(b >= OG_SEC_H) return 0;
 
 	//return values for x-positive slice of grid
-	if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] += cvalue) : (_m_posneg[a][b] += cvalue);
-
-	//return values for x-negative slice of grid
-	return (y >= 0) ? (_m_negpos[a][b] += cvalue) : (_m_negneg[a][b] += cvalue);
+	if( x >= 0){
+		if( y >= 0){
+			if(cvalue > 0 ){
+				if(_m_pospos[a][b] < HIMM_THRESHOLD_MAX){	// increment
+					return _m_pospos[a][b] += cvalue;
+				}	
+			}else {
+				if(_m_pospos[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+					return _m_pospos[a][b] += cvalue;
+				}	
+			}
+				
+			
+		}else{ // y < 0
+			if(cvalue > 0 ){
+				if(_m_posneg[a][b] < HIMM_THRESHOLD_MAX){	// increment	
+					return _m_posneg[a][b] += cvalue;
+				}	
+			}else {
+				if(_m_posneg[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+					return _m_posneg[a][b] += cvalue;
+				}	
+			}
+		}
+	}else{	// x < 0
+		if( y >= 0){
+			if(cvalue > 0 ){
+				if(_m_negpos[a][b] < HIMM_THRESHOLD_MAX){	// increment
+					return _m_negpos[a][b] += cvalue;
+				}	
+			}else {
+				if(_m_negpos[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+					return _m_negpos[a][b] += cvalue;
+				}	
+			}
+				
+			
+		}else{ // y < 0
+			if(cvalue > 0 ){
+				if(_m_negneg[a][b] < HIMM_THRESHOLD_MAX){	// increment
+					return _m_negneg[a][b] += cvalue;
+				}	
+			}else {
+				if(_m_negneg[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+					return _m_negneg[a][b] += cvalue;
+				}	
+			}
+		}
+	}
 }
 
 /**
