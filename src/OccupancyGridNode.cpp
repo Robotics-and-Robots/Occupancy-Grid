@@ -24,7 +24,7 @@
 using namespace geometry_msgs;
 
 //Prototypes
-void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan);
+void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
 void move(double, double , bool);
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg); 
 double toEulerAngle(double x, double y, double z, double w);
@@ -33,9 +33,9 @@ double toEulerAngle(double x, double y, double z, double w);
 ros::Publisher pub_velocity;
 
 //global occupancy grid, hmmi and potential fields
-OccupancyGrid* _occupancy_grid;
-PotentialFields* _potential_fields;
-Himm* _himm;
+OccupancyGrid* 		_occupancy_grid;
+PotentialFields* 	_potential_fields;
+Himm*               _himm;
 														
 //global position vector (updated in odom callback)
 geometry_msgs::Pose2D _pos;
@@ -50,18 +50,18 @@ int main(int argc,char **argv)
 	ros::NodeHandle n;
 
 	//subscribe to Hokuyo node (laser)
-	ros::Subscriber sub_scan = n.subscribe("/scan", 100, processLaserScan);
+	ros::Subscriber sub_scan = n.subscribe("/scan", 1, hokuyoCallback);
 
 	//subscribe to Odom node (odometry and movement)
-	ros::Subscriber sub_odom = n.subscribe("/odom", 1000, odomCallback);
+	ros::Subscriber sub_odom = n.subscribe("/odom", 1, odomCallback);
 
 	// Defines robot motion publisher
 	pub_velocity = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	
 
 	//instantiates a new occupancy grid, hmmi and potential fields algorithms
- 	_occupancy_grid = new OccupancyGrid();
-	_himm = new Himm(_occupancy_grid);
-	_potential_fields = new PotentialFields(_occupancy_grid);
+ 	_occupancy_grid 	= new OccupancyGrid();
+	_himm 				= new Himm(_occupancy_grid);
+	_potential_fields 	= new PotentialFields(_occupancy_grid);
 
 	// Let ROS take over
 	ros::spin();
@@ -75,17 +75,17 @@ int main(int argc,char **argv)
 *	@Brief: 		Hokuyo range info "print"
 *
 */
-void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
+void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
 	double reading; 
 
-	//ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
-	//ROS_INFO("angle_increment [%f]", scan->angle_increment);
-	//ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
+	// ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
+	// ROS_INFO("angle_increment [%f]", scan->angle_increment);
+	// ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
 	
-	//update uccupancy grid for all ranges
-	double i = HOKUYO_ANGLE_MAX;
-	int j = 0;
+	//update occupancy grid for all ranges
+	double  i = HOKUYO_ANGLE_MAX;
+	int     j = 0;
 
 	while(i >= HOKUYO_ANGLE_MIN){
 	 	
@@ -99,12 +99,29 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 		j++;
 	}
 
+    //update occupancy grid for all ranges
+	// double i = HOKUYO_ANGLE_MIN;
+	// int j = 0;
+
+	// while(i < HOKUYO_ANGLE_MAX){
+	 	
+	// 	reading = scan->ranges[j];
+
+	// 	if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !std::isnan(reading)){
+	// 		_himm->UpdateLocation(_pos, reading, i);
+	// 	}
+
+	// 	i += HOKUYO_ANGLE_INC;
+	// 	j++;
+	// }
+
 	//save occupancy grid to file
-	_himm->ToFile("/home/lsa/Desktop/_himm.html");
+	// _himm->ToFile("/home/lsa/Desktop/_himm.html");
+	_himm->ToFile("/home/darlan/Darlan/_himm.html");
 
 	//recalculate routes using potential fields and print to file
 	_potential_fields->UpdateRoutes();
-	_potential_fields->ToFile("/home/lsa/Desktop/filename.html");
+	_potential_fields->ToFile("/home/darlan/Darlan/filename.html");
 }
 
 /*
@@ -139,7 +156,7 @@ void move(double speed, double distance, bool isForward){
 	ros::Rate loop_rate(10);
 	do{
 
-		pub_velocity.publish(vel_msg);	// Moves robot
+		pub_velocity.publish(vel_msg);			// Moves robot
 		double t1 = ros::Time::now().toSec();	// Get current time
 		current_distance = speed * (t1 - t0);	// Updates travelled distance estimation
 
@@ -154,17 +171,17 @@ void move(double speed, double distance, bool isForward){
 
 /*
 *	@Author: 		Anderson Domingues
-*	@Brief: 		Main function.
+*	@Brief: 		
 * 	@Description:	Responsable for update current location (from odometry)
 */
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
 
 	//update location
-	_pos.x 		= msg->pose.pose.position.x;
-	_pos.y 		= msg->pose.pose.position.y;
+	_pos.x		= msg->pose.pose.position.x;
+	_pos.y		= msg->pose.pose.position.y;
 
 	//update angle
-	_pos.theta = toEulerAngle(
+	_pos.theta 	= toEulerAngle(
 		msg->pose.pose.orientation.x, 
 		msg->pose.pose.orientation.y,
 		msg->pose.pose.orientation.z,
@@ -185,7 +202,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg){
  * @param yaw Pointer to the variable to be written with the eulerian 
  * value associated with the given quarternion */
 double toEulerAngle(double x, double y, double z, double w){
-	double siny = +2.0 * (w * z + x * y);
-	double cosy = +1.0 - 2.0 * (y * y + z * z);  
+	double siny = +2.0 * 		(w * z + x * y);
+	double cosy = +1.0 - 2.0 * 	(y * y + z * z);  
 	return atan2(siny, cosy); 
 }

@@ -40,17 +40,17 @@ OGCellType OccupancyGrid::Get(int x, int y){
  */
 OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	
-	int a = std::abs(x);
-	int b = std::abs(y);
+	int a = round(std::abs(x));
+	int b = round(std::abs(y));
 
 	if(a >= OG_SEC_W) return 0;
 	if(b >= OG_SEC_H) return 0;
 
 	//return values for x-positive slice of grid
-	if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] = cvalue) : (_m_posneg[a][b] = cvalue);
+	if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] += cvalue) : (_m_posneg[a][b] += cvalue);
 
 	//return values for x-negative slice of grid
-	return (y >= 0) ? (_m_negpos[a][b] = cvalue) : (_m_negneg[a][b] = cvalue);
+	return (y >= 0) ? (_m_negpos[a][b] += cvalue) : (_m_negneg[a][b] += cvalue);
 }
 
 /**

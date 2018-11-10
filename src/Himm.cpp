@@ -24,12 +24,14 @@ Himm::~Himm(){}
  */
 OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
 
+	// Defines odom_theta (robot odometry) between 0 <-> 2PI
 	double odom_theta;
 	if(pose.theta < 0)
 		odom_theta = (2 * M_PI) - std::abs(pose.theta);
 	else 
 		odom_theta = pose.theta;
 
+	// Defines HOKUYO laser angle between 0 <-> 2PI
 	double calc_theta;
 	if(theta < 0)
 		calc_theta = (2 * M_PI) - std::abs(theta);
@@ -42,15 +44,14 @@ OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
 	if(odom_theta < 0)
 		odom_theta  = (2 * M_PI) - std::abs(odom_theta);
 
-	OGCellType hDist = cos(odom_theta) * dist; //horizontal distance
-	OGCellType wDist = sin(odom_theta) * dist; //vertical distance
+	OGCellType hDist = cos(odom_theta) * dist; //Hokuyo laser horizontal distance
+	OGCellType wDist = sin(odom_theta) * dist; //Hokuyo laser vertical distance
 
 	int x_coord = (pose.x + hDist) * UNIT_FIX;
 	int y_coord = (pose.y + wDist) * UNIT_FIX;
 
-
 	//decrement cells in the path
-	/*Vector2D vec;
+	Vector2D vec;
 	vec.x = ((pose.x + hDist) * UNIT_FIX) - pose.x;
 	vec.y = ((pose.y + wDist) * UNIT_FIX) - pose.y;
 
@@ -65,11 +66,11 @@ OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
 	do{
 
 		curr = (vecUnitary * i) + posev;
-		this->Set(curr.x, curr.y, -1);
+		_grid->Set(curr.x, curr.y, -1);
 		i++;
 
 	}while(!curr < !vec);
-*/
+	
 
 	//set location with target increment
 	_grid->Set(x_coord, y_coord, 1);
