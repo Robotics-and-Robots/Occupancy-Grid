@@ -91,7 +91,7 @@ void processLaserScan(const sensor_msgs::LaserScan::ConstPtr& scan)
 	 	
 		reading = scan->ranges[j];
 
-		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !isnan(reading)){
+		if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !std::isnan(reading)){
 			_himm->UpdateLocation(_pos, reading, i);
 		}
 
