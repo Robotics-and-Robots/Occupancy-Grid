@@ -103,13 +103,13 @@ void OccupancyGrid::ToFile(std::string filename){
 			uint32_t gscolor;
 		        gscolor = this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
 
-			ss << "<circle cx=" << w << " cy=" << h << " r=1 stroke-width=1 ";
+			ss << "<circle cx='" << w << "' cy='" << h << "' r='1' stroke-width='0' ";
 
 			//if the cell is over the x- or y-axis, print it as purple
 			if(x == 0 || y == 0){
-				ss << " stroke='gray' ";
+				ss << " fill='red' ";
 			}else{
-				ss << " stroke='#" << std::hex << vv << vv << vv << "' ";
+				ss << " fill='#" << std::hex << vv << vv << vv << "' ";
 			}
 
 			ss << " /> ";
