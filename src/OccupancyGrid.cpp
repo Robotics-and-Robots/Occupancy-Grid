@@ -109,7 +109,7 @@ void OccupancyGrid::ToFile(std::string filename){
 			if(x == 0 || y == 0){
 				ss << " fill='red' ";
 			}else{
-				ss << " fill='#" << std::hex << vv << vv << vv << "' ";
+				ss << " fill='#" << std::hex << gscolor << gscolor << gscolor << "' ";
 			}
 
 			ss << " /> ";
