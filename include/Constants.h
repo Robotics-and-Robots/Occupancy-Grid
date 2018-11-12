@@ -5,7 +5,7 @@
 typedef double      OGCellType;
 
 //@TODO verify
-#define UNIT_FIX    75 
+#define UNIT_FIX    100 
 
 /* Width and height of occupancy grids */
 #define OG_WIDTH    (4 * UNIT_FIX)
@@ -25,5 +25,7 @@ typedef double      OGCellType;
 #define HOKUYO_ANGLE_INC  0.006136
 #define HOKUYO_RANGE_MIN  0.02
 #define HOKUYO_RANGE_MAX  5.60
+
+#define HOKUYO_LASER_SKIP 1
 
 #endif /* _CONSTANTS_H */

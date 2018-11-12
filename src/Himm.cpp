@@ -26,51 +26,59 @@ OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
 
 	// Defines odom_theta (robot odometry) between 0 <-> 2PI
 	double odom_theta;
-	if(pose.theta < 0)
-		odom_theta = (2 * M_PI) - std::abs(pose.theta);
-	else 
-		odom_theta = pose.theta;
+	//if(pose.theta < 0)
+	// 	odom_theta = (2 * M_PI) - std::abs(pose.theta);
+	// else 
+	// 	odom_theta = pose.theta;
 
 	// Defines HOKUYO laser angle between 0 <-> 2PI
-	double calc_theta;
-	if(theta < 0)
-		calc_theta = (2 * M_PI) - std::abs(theta);
-	else
-		calc_theta = theta;
+	// double calc_theta;
+	// if(theta < 0)
+	// 	calc_theta = (2 * M_PI) - std::abs(theta);
+	// else
+	// 	calc_theta = theta;
 
 	//angle correction (neg to pos rad values)
-	odom_theta -= calc_theta;
 
-	if(odom_theta < 0)
-		odom_theta  = (2 * M_PI) - std::abs(odom_theta);
-
-	OGCellType hDist = cos(odom_theta) * dist; //Hokuyo laser horizontal distance
-	OGCellType wDist = sin(odom_theta) * dist; //Hokuyo laser vertical distance
-
-	int x_coord = (pose.x + hDist) * UNIT_FIX;
-	int y_coord = (pose.y + wDist) * UNIT_FIX;
-
-	//decrement cells in the path
-	Vector2D vec;
-	vec.x = ((pose.x + hDist) * UNIT_FIX) - pose.x;
-	vec.y = ((pose.y + wDist) * UNIT_FIX) - pose.y;
-
-	Vector2D vecUnitary = ~vec;
-
-	Vector2D posev;
-	posev.x = pose.x;
-	posev.y = pose.y;
+	odom_theta += theta;
 	
-	int i = 1;
-	Vector2D curr;
-	do{
+	// while(odom_theta < 0)
+	// 	odom_theta  = (2 * M_PI) - std::abs(odom_theta);
 
-		curr = (vecUnitary * i) + posev;
-		_grid->Set(curr.x, curr.y, -1);
-		i++;
+	OGCellType wDist = cos(odom_theta) * dist; //Hokuyo laser horizontal distance
+	OGCellType hDist = sin(odom_theta) * dist; //Hokuyo laser vertical distance
 
-	}while(!curr < !vec);
+	int x_coord = (pose.x + wDist) * UNIT_FIX;
+	int y_coord = (pose.y + hDist) * UNIT_FIX;
+
+	//cria vetor na origem com o mesmo comprimento do vetor 
+	//gerado pelo laser (que tem origem no robô)
+	Vector2D vecLaser;
+	vecLaser.x = x_coord - pose.x;
+	vecLaser.y = y_coord - pose.y;
+
+	//gera o vetor unitário do vetor criado (que tem mesmo comprimento
+	//e direção do vetor unitário do laser)
+	Vector2D vecUnitary = ~vecLaser;
+
+	//cria o vetor da posição do robô
+	Vector2D vecRobot;
+	vecRobot.x = pose.x;
+	vecRobot.y = pose.y;
 	
+	//cria um vetor de tamanho unitário com origem
+	//na coordenada do robô. Incrementa este vetor 
+	//em 1 (comprimento) enquanto ele não atingir 
+	//a coordenada encontrada pelo laser, passando
+	//pelas coordenadas no caminho entre o robô e o
+	//alvo encontrado pelo laser.
+	Vector2D vecIncrement;
+	vecIncrement = vecRobot; //posev é o centro do robô
+	
+	while(!vecIncrement < !vecLaser){
+		_grid->Set(round(vecIncrement.x), round(vecIncrement.y), -1);
+		vecIncrement = (vecIncrement + vecUnitary);
+	}
 
 	//set location with target increment
 	_grid->Set(x_coord, y_coord, 1);

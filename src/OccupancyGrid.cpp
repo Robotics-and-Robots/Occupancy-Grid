@@ -40,21 +40,27 @@ OGCellType OccupancyGrid::Get(int x, int y){
  */
 OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	
-	int a = round(std::abs(x));
-	int b = round(std::abs(y));
+	int a = std::abs(x);
+	int b = std::abs(y);
 
 	if(a >= OG_SEC_W) return 0;
 	if(b >= OG_SEC_H) return 0;
+
+	// //return values for x-positive slice of grid
+	// if(x >= 0) return (y >= 0) ? (_m_pospos[a][b] += cvalue) : (_m_posneg[a][b] += cvalue);
+
+	// //return values for x-negative slice of grid
+	// return (y >= 0) ? (_m_negpos[a][b] += cvalue) : (_m_negneg[a][b] += cvalue);
 
 	//return values for x-positive slice of grid
 	if( x >= 0){
 		if( y >= 0){
 			if(cvalue > 0 ){
-				if(_m_pospos[a][b] < HIMM_THRESHOLD_MAX){	// increment
+				if(_m_pospos[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment
 					return _m_pospos[a][b] += cvalue;
 				}	
 			}else {
-				if(_m_pospos[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+				if(_m_pospos[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
 					return _m_pospos[a][b] += cvalue;
 				}	
 			}
@@ -62,11 +68,11 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 			
 		}else{ // y < 0
 			if(cvalue > 0 ){
-				if(_m_posneg[a][b] < HIMM_THRESHOLD_MAX){	// increment	
+				if(_m_posneg[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment	
 					return _m_posneg[a][b] += cvalue;
 				}	
 			}else {
-				if(_m_posneg[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+				if(_m_posneg[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
 					return _m_posneg[a][b] += cvalue;
 				}	
 			}
@@ -74,11 +80,11 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	}else{	// x < 0
 		if( y >= 0){
 			if(cvalue > 0 ){
-				if(_m_negpos[a][b] < HIMM_THRESHOLD_MAX){	// increment
+				if(_m_negpos[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
 					return _m_negpos[a][b] += cvalue;
 				}	
 			}else {
-				if(_m_negpos[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+				if(_m_negpos[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
 					return _m_negpos[a][b] += cvalue;
 				}	
 			}
@@ -86,11 +92,11 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 			
 		}else{ // y < 0
 			if(cvalue > 0 ){
-				if(_m_negneg[a][b] < HIMM_THRESHOLD_MAX){	// increment
+				if(_m_negneg[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
 					return _m_negneg[a][b] += cvalue;
 				}	
 			}else {
-				if(_m_negneg[a][b] > HIMM_THRESHOLD_MIN){	// decrement
+				if(_m_negneg[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
 					return _m_negneg[a][b] += cvalue;
 				}	
 			}
@@ -135,9 +141,12 @@ void OccupancyGrid::ToFile(std::string filename){
 	for(int y = OG_SEC_H; y > -OG_SEC_H; y--){
 		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
 
+			uint32_t vv; 
+			vv = (this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN)));
+
 			if (this->Get(x, y) > 0)
 			    ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='3' " 
-                   << "stroke='#" << std::hex << (this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN))) << "FFFF' />";
+                   << "stroke='#" << std::hex <<  vv << vv << vv << "' />";
 			else if(x == 0 || y == 0)
 				ss << "<circle cx='" << (w*4) << "' cy='" << (h*4) << "' r='1' stroke-width='1' " 
                    << "stroke='gray' />";
