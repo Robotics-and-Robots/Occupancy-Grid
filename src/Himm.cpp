@@ -1,4 +1,5 @@
 #include "../include/Himm.h"
+#include "ros/ros.h"
 
 /**
  * Ctor.
@@ -22,16 +23,16 @@ Himm::~Himm(){}
  * @param theta The inclination of the laser ray during the reading in degrees
  * @returns The value written to the cell
  */
-OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
+OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType thetaRay){
 
 	// Defines odom_theta (robot odometry) between 0 <-> 2PI
-	double odom_theta;
-	//if(pose.theta < 0)
+	// double odom_theta;
+	// if(pose.theta < 0)
 	// 	odom_theta = (2 * M_PI) - std::abs(pose.theta);
 	// else 
 	// 	odom_theta = pose.theta;
 
-	// Defines HOKUYO laser angle between 0 <-> 2PI
+	// // Defines HOKUYO laser angle between 0 <-> 2PI
 	// double calc_theta;
 	// if(theta < 0)
 	// 	calc_theta = (2 * M_PI) - std::abs(theta);
@@ -39,48 +40,65 @@ OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType theta){
 	// 	calc_theta = theta;
 
 	//angle correction (neg to pos rad values)
+	// double pivot_ang;
+	// pivot_ang = (HOKUYO_ANGLE_MAX - HOKUYO_ANGLE_MIN) / 2;
+	
+	// if (calc_theta > pivot_ang)
+	// 	odom_theta -= calc_theta;
+	// else
+	// 	odom_theta += calc_theta;
 
-	odom_theta += theta;
+	// odom_theta -= calc_theta;
 	
 	// while(odom_theta < 0)
 	// 	odom_theta  = (2 * M_PI) - std::abs(odom_theta);
 
-	OGCellType wDist = cos(odom_theta) * dist; //Hokuyo laser horizontal distance
-	OGCellType hDist = sin(odom_theta) * dist; //Hokuyo laser vertical distance
+	// ROS_INFO("Corrected angle: [%f]", corrected_angle);
 
-	int x_coord = (pose.x + wDist) * UNIT_FIX;
-	int y_coord = (pose.y + hDist) * UNIT_FIX;
+	// OGCellType wDist = cos(odom_theta) * dist; //Hokuyo laser horizontal distance
+	// OGCellType hDist = sin(odom_theta) * dist; //Hokuyo laser vertical distance
+
+	// OGCellType wDist = cos(corrected_angle) * dist; //Hokuyo laser horizontal distance
+	// OGCellType hDist = sin(corrected_angle) * dist; //Hokuyo laser vertical distance	
+
+	// int x_coord = (pose.x + wDist) * UNIT_FIX;
+	// int y_coord = (pose.y + hDist) * UNIT_FIX;
+
+	double corrected_angle = pose.theta + thetaRay;
+
+	OGCellType a = (cos(corrected_angle) * dist + pose.x) * UNIT_FIX; //Hokuyo laser horizontal distance
+	OGCellType b = (sin(corrected_angle) * dist + pose.y) * UNIT_FIX; //Hokuyo laser horizontal distance
 
 	//cria vetor na origem com o mesmo comprimento do vetor 
 	//gerado pelo laser (que tem origem no robô)
-	Vector2D vecLaser;
-	vecLaser.x = x_coord - pose.x;
-	vecLaser.y = y_coord - pose.y;
+	// Vector2D vecLaser;
+	// vecLaser.x = x_coord - pose.x;
+	// vecLaser.y = y_coord - pose.y;
 
-	//gera o vetor unitário do vetor criado (que tem mesmo comprimento
-	//e direção do vetor unitário do laser)
-	Vector2D vecUnitary = ~vecLaser;
+	// //gera o vetor unitário do vetor criado (que tem mesmo comprimento
+	// //e direção do vetor unitário do laser)
+	// Vector2D vecUnitary = ~vecLaser;
 
-	//cria o vetor da posição do robô
-	Vector2D vecRobot;
-	vecRobot.x = pose.x;
-	vecRobot.y = pose.y;
+	// //cria o vetor da posição do robô
+	// Vector2D vecRobot;
+	// vecRobot.x = pose.x;
+	// vecRobot.y = pose.y;
 	
-	//cria um vetor de tamanho unitário com origem
-	//na coordenada do robô. Incrementa este vetor 
-	//em 1 (comprimento) enquanto ele não atingir 
-	//a coordenada encontrada pelo laser, passando
-	//pelas coordenadas no caminho entre o robô e o
-	//alvo encontrado pelo laser.
-	Vector2D vecIncrement;
-	vecIncrement = vecRobot; //posev é o centro do robô
+	// //cria um vetor de tamanho unitário com origem
+	// //na coordenada do robô. Incrementa este vetor 
+	// //em 1 (comprimento) enquanto ele não atingir 
+	// //a coordenada encontrada pelo laser, passando
+	// //pelas coordenadas no caminho entre o robô e o
+	// //alvo encontrado pelo laser.
+	// Vector2D vecIncrement;
+	// vecIncrement = vecRobot; //posev é o centro do robô
 	
-	while(!vecIncrement < !vecLaser){
-		_grid->Set(round(vecIncrement.x), round(vecIncrement.y), -1);
-		vecIncrement = (vecIncrement + vecUnitary);
-	}
+	// while(!vecIncrement < !vecLaser){
+	// 	_grid->Set(round(vecIncrement.x), round(vecIncrement.y), -1);
+	// 	vecIncrement = (vecIncrement + vecUnitary);
+	// }
 
 	//set location with target increment
-	_grid->Set(x_coord, y_coord, 1);
+	_grid->Set(a, b, 1);
 }
 

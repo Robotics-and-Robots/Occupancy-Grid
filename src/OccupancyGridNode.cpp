@@ -61,7 +61,7 @@ int main(int argc,char **argv)
 	//instantiates a new occupancy grid, hmmi and potential fields algorithms
  	_occupancy_grid 	= new OccupancyGrid();
 	_himm 				= new Himm(_occupancy_grid);
-	_potential_fields 	= new PotentialFields(_occupancy_grid);
+	// _potential_fields 	= new PotentialFields(_occupancy_grid);
 
 	// Let ROS take over
 	ros::spin();
@@ -84,10 +84,10 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 	// ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
 	
 	//update occupancy grid for all ranges
-	double  i = HOKUYO_ANGLE_MAX;
+	double  i = HOKUYO_ANGLE_MIN;
 	int     j = 0;
 
-	while(i >= HOKUYO_ANGLE_MIN){
+	while(i <= HOKUYO_ANGLE_MAX){
 
 		//if((j % HOKUYO_LASER_SKIP) == 0){
 
@@ -98,7 +98,7 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 			}
 		//}
 
-		i -= HOKUYO_ANGLE_INC;
+		i += HOKUYO_ANGLE_INC;
 		j++;
 	}
 
@@ -123,8 +123,8 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 	_himm->ToFile("/home/darlan/Darlan/_himm.html");
 
 	//recalculate routes using potential fields and print to file
-	_potential_fields->UpdateRoutes();
-	_potential_fields->ToFile("/home/darlan/Darlan/filename.html");
+	// _potential_fields->UpdateRoutes();
+	// _potential_fields->ToFile("/home/darlan/Darlan/filename.html");
 }
 
 /*

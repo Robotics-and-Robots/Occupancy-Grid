@@ -16,12 +16,12 @@ typedef double      OGCellType;
 #define OG_SEC_H    (OG_HEIGHT / 2)
 
 /* Himm configuration */
-#define HIMM_THRESHOLD_MAX 10
+#define HIMM_THRESHOLD_MAX 15
 #define HIMM_THRESHOLD_MIN 0
 
 /* Potential fields */
 #define PF_THRESHOLD ((HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN) / 2)  /* threshould (wall if >= 50%) */
-#define PF_????
+#define PF_ITERATIONS 10
 
 
 /* Hokuyo */

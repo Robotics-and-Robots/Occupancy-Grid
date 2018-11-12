@@ -10,11 +10,11 @@ void PotentialFields::UpdateRoutes(){
 
 	//fill all cells but the bounds
 	for(int i = 0; i < OG_WIDTH; i++){
-		for(int j = 0; j < OG_HEIGTH; j++){
-			if(_grid->Get(i, j) > PF_THESHOLD)
-				_temp_grid->Set(i, j, 1) // wall
+		for(int j = 0; j < OG_HEIGHT; j++){
+			if(_grid->Get(i, j) > PF_THRESHOLD)
+				_temp_grid->Set(i, j, 1); // wall
 			else
-				_temp_grid->Set(i, j, 0) //blank
+				_temp_grid->Set(i, j, 0); //blank
 		}
 	}
 }
@@ -40,34 +40,34 @@ Pose2D PotentialFields::GetNextPosition(Pose2D pose, Pose2D target){
 
 	//copy data from the temp_grid
 	for(int i = 0; i < OG_WIDTH; i++)
-		for(int j = 0; j < OG_HEIGTH; j++)
-		       pf->Get(i, j, _temp_grid->Get(i, j));	
+		for(int j = 0; j < OG_HEIGHT; j++)
+		       pf.Set(i, j, _temp_grid->Get(i, j));	
 
 	//run potential fields algorithm for k-iterations
 	for(int k = 0; k < PF_ITERATIONS; k++){
 
 		//fill all cells but the bounds
 		for(int i = 1; i < OG_WIDTH - 1; i++){
-			for(int j = 1; j < OG_HEIGTH - 1; j++){
+			for(int j = 1; j < OG_HEIGHT - 1; j++){
 
 				//wall condition
-				if(pf->Get(i, j) == 1)	continue;
+				if(pf.Get(i, j) == 1)	continue;
 
 				//goal condition
-				if(i == target.x && j == target.y) pf->Set(i, j, 0);
+				if(i == target.x && j == target.y) pf.Set(i, j, 0);
 
 				//other cells 
-				pf->Set(
-					(pf->Get(i, j + 1) +
-					 pf->Get(i, j - 1) + 
-					 pf->Get(i + 1, j) +
-					 pf->Get(i - 1, j)) / 4);
+				pf.Set(i, j,
+					(pf.Get(i, j + 1) +
+					 pf.Get(i, j - 1) + 
+					 pf.Get(i + 1, j) +
+					 pf.Get(i - 1, j)) / 4);
 			}
 		}
 	}
 
 	//print potential fields result to file
-	pf->ToFile("~/Desktop/pf_result.html");
+	pf.ToFile("~/Desktop/pf_result.html");
 }
 
 void PotentialFields::ToFile(std::string filename){
