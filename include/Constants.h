@@ -5,7 +5,7 @@
 typedef double      OGCellType;
 
 //@TODO verify
-#define UNIT_FIX    100 
+#define UNIT_FIX    100
 
 /* Width and height of occupancy grids */
 #define OG_WIDTH    (4 * UNIT_FIX)
