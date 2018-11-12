@@ -100,8 +100,11 @@ void OccupancyGrid::ToFile(std::string filename){
 		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
 
 			//convert cell values to a grayscale color
-			uint32_t gscolor;
-		        gscolor = this->Get(x, y) * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
+			uint32_t gscolor = this->Get(x, y);
+
+			if(gscolor == 0) continue;
+
+		        gscolor = gscolor * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
 
 			ss << "<circle cx='" << w << "' cy='" << h << "' r='1' stroke-width='0' ";
 
