@@ -64,26 +64,25 @@ OGCellType Himm::UpdateLocation(Pose2D pose, OGCellType dist, OGCellType thetaRa
 		}
 	}
 
-
-	//set location with target increment
-	_grid->Set(vecLaser.x * UNIT_FIX, vecLaser.y * UNIT_FIX, 1);
-
-	// //inicio da limpeza
-	// Vector2D robotPose;
-	// robotPose.x = pose.x;
-	// robotPose.y = pose.y;
+	//inicio da limpeza
+	// Vector2D 			robotPose;
+	// robotPose.x 		= pose.x * UNIT_FIX;
+	// robotPose.y 		= pose.y * UNIT_FIX;
 
 	// Vector2D vecRay 	= vecLaser - robotPose;
-	// Vector2D uvecRay 	= ~vecRay;
+	// Vector2D uvecRay	= ~vecRay;
 
 	// while(!uvecRay < !vecRay){
 
 	// 	_grid->Set(
-	// 		round(robotPose.x + uvecRay.x) * UNIT_FIX,
-	// 		round(robotPose.y + uvecRay.y) * UNIT_FIX, 
+	// 		round(robotPose.x + uvecRay.x),
+	// 		round(robotPose.y + uvecRay.y), 
 	// 		-1);
 
 	// 	uvecRay = uvecRay + ~vecRay;
 	// }
+
+	//set location with target increment
+	_grid->Set(vecLaser.x * UNIT_FIX, vecLaser.y * UNIT_FIX, 1);
 }
 

@@ -89,14 +89,14 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 
 	while(i <= HOKUYO_ANGLE_MAX){
 
-		//if((j % HOKUYO_LASER_SKIP) == 0){
+		if((j % HOKUYO_LASER_SKIP) == 0){
 
 			reading = scan->ranges[j];
 
 			if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !std::isnan(reading)){
 				_himm->UpdateLocation(_pos, reading, i);
 			}
-		//}
+		}
 
 		i += HOKUYO_ANGLE_INC;
 		j++;
