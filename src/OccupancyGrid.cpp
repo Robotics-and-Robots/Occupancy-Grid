@@ -53,55 +53,66 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 	// return (y >= 0) ? (_m_negpos[a][b] += cvalue) : (_m_negneg[a][b] += cvalue);
 
 	//return values for x-positive slice of grid
-	if( x >= 0){
-		if( y >= 0){
-			if(cvalue > 0 ){
-				if(_m_pospos[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment
-					return _m_pospos[a][b] += cvalue;
-				}	
-			}else {
-				if(_m_pospos[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
-					return _m_pospos[a][b] += cvalue;
-				}	
-			}
+
+	double newValue = this->Get(x, y) + cvalue;
+
+	if(newValue < HIMM_THRESHOLD_MIN) return 0;
+	if(newValue > HIMM_THRESHOLD_MAX) return 0;
+	
+	if(x >= 0) 	return (y >= 0) ? (_m_pospos[a][b] = newValue) : (_m_posneg[a][b] = newValue);
+				return (y >= 0) ? (_m_negpos[a][b] = newValue) : (_m_negneg[a][b] = newValue);
+
+
+
+	// if( x >= 0){
+	// 	if( y >= 0){
+	// 		if(cvalue > 0 ){
+	// 			if(_m_pospos[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment
+	// 				return _m_pospos[a][b] += cvalue;
+	// 			}	
+	// 		}else {
+	// 			if(_m_pospos[a][b] + cvalue > HIMM_THRESHOLD_MIN){	// decrement
+	// 				return _m_pospos[a][b] += cvalue;
+	// 			}	
+	// 		}
 				
 			
-		}else{ // y < 0
-			if(cvalue > 0 ){
-				if(_m_posneg[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment	
-					return _m_posneg[a][b] += cvalue;
-				}	
-			}else {
-				if(_m_posneg[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
-					return _m_posneg[a][b] += cvalue;
-				}	
-			}
-		}
-	}else{	// x < 0
-		if( y >= 0){
-			if(cvalue > 0 ){
-				if(_m_negpos[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
-					return _m_negpos[a][b] += cvalue;
-				}	
-			}else {
-				if(_m_negpos[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
-					return _m_negpos[a][b] += cvalue;
-				}	
-			}
+	// 	}else{ // y < 0
+	// 		if(cvalue > 0 ){
+	// 			if(_m_posneg[a][b] + cvalue < HIMM_THRESHOLD_MAX){	// increment	
+	// 				return _m_posneg[a][b] += cvalue;
+	// 			}	
+	// 		}else {
+	// 			if(_m_posneg[a][b] + cvalue > HIMM_THRESHOLD_MIN){	// decrement
+	// 				return _m_posneg[a][b] += cvalue;
+	// 			}	
+	// 		}
+	// 	}
+	// }else{	// x < 0
+	// 	if( y >= 0){
+	// 		if(cvalue > 0 ){
+	// 			if(_m_negpos[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
+	// 				return _m_negpos[a][b] += cvalue;
+	// 			}	
+	// 		}else {
+	// 			if(_m_negpos[a][b] + cvalue > HIMM_THRESHOLD_MIN){	// decrement
+	// 				return _m_negpos[a][b] += cvalue;
+	// 			}	
+	// 		}
 				
 			
-		}else{ // y < 0
-			if(cvalue > 0 ){
-				if(_m_negneg[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
-					return _m_negneg[a][b] += cvalue;
-				}	
-			}else {
-				if(_m_negneg[a][b] - cvalue > HIMM_THRESHOLD_MIN){	// decrement
-					return _m_negneg[a][b] += cvalue;
-				}	
-			}
-		}
-	}
+	// 	}else{ // y < 0
+	// 		if(cvalue > 0 ){
+	// 			if(_m_negneg[a][b] + cvalue  < HIMM_THRESHOLD_MAX){	// increment
+	// 				return _m_negneg[a][b] += cvalue;
+	// 			}	
+	// 		}else {
+	// 			if(_m_negneg[a][b] + cvalue > HIMM_THRESHOLD_MIN){	// decrement
+	// 				return _m_negneg[a][b] += cvalue;
+	// 			}	
+	// 		}
+	// 	}
+	// }
 }
 
 /**
