@@ -7,6 +7,7 @@
 #include "Vector2D.hpp"
 #include "Constants.h"
 
+
 using namespace geometry_msgs;
 
 //Cell elements are float-typed values
@@ -22,6 +23,8 @@ private:
 	OGCellType _m_negpos[OG_SEC_W +1][OG_SEC_H +1]; //X is negative, Y is positive.
 	OGCellType _m_negneg[OG_SEC_W +1][OG_SEC_H +1]; //X is negative, Y is negetive.
 
+	Vector2D goal;
+
 public:
 
 	//ctor. and dtor.
@@ -30,11 +33,13 @@ public:
 	
 	//overload [] to access as an array
 	OGCellType Get(int x, int y);
+	Vector2D GetGoal();
 	
 	//set some value to a cell
 	OGCellType Set(int x, int y, OGCellType value);
 	OGCellType Set_PF(int x, int y, OGCellType cvalue);
 	OGCellType SetLoc(Pose2D pose, OGCellType dist, OGCellType theta);
+	void SetGoal(Vector2D);
 
 	void Reset();
 
@@ -44,6 +49,8 @@ public:
 	void LoadMap(std::string);
 	void UpdatePotentialFields();
 	void ToStringPF();
+	void PathPlanning(geometry_msgs::Pose2D);
+	Vector2D GetNextPosition(Vector2D curr);
 };
 
 #endif /* OCCUPATION_GRID_H */

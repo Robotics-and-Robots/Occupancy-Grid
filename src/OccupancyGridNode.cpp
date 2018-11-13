@@ -223,6 +223,7 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 
 	uint32_t option = twist.linear.x;
 	std::ofstream of;
+	Vector2D vec;
 
 	switch (option)
 	{
@@ -230,6 +231,10 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 			of.open("/home/darlan/Desktop/map.map", std::ofstream::trunc);
 			of << _occupancy_grid->ToMap();
 			of.close();
+			break;
+
+		case 13: //load map
+			_occupancy_grid->LoadMap("/home/darlan/Desktop/map.map");
 			break;
 	
 		case 14: //disable hokuyo
@@ -240,12 +245,23 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 			HOKUYO_DISABLE = false;	
 			break;
 
-		case 16: //load map
-			_occupancy_grid->LoadMap("/home/darlan/Desktop/map.map");
+
+		case 16: // potencial field
+			vec.x = OG_SEC_W;
+			vec.y = OG_SEC_H;
+			_occupancy_grid->SetGoal(vec);
+			_occupancy_grid->UpdatePotentialFields();
 			break;
 
 		case 17: // potencial field
+			vec.x = twist.angular.x;
+			vec.y = twist.angular.y;
+			_occupancy_grid->SetGoal(vec);
 			_occupancy_grid->UpdatePotentialFields();
+			break;
+
+		case 18: // potencial field
+			_occupancy_grid->PathPlanning(_pos);
 			break;
 	}
 }

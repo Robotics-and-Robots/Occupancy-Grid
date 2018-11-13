@@ -3,6 +3,8 @@
 #include <cmath>
 #include "../include/OccupancyGrid.h"
 #include "ros/ros.h"
+#include <queue>          // std::queue
+#include "geometry_msgs/Pose2D.h"
 
 using namespace geometry_msgs;
 
@@ -195,10 +197,6 @@ void OccupancyGrid::LoadMap(std::string filename){
 
 void OccupancyGrid::UpdatePotentialFields(){
 
-	Vector2D goal;
-	goal.x = 1;
-	goal.y = 1;
-
 	OccupancyGrid* tempGrid;
 	tempGrid = new OccupancyGrid();
 
@@ -216,7 +214,7 @@ void OccupancyGrid::UpdatePotentialFields(){
 					tempGrid->Set_PF(i, j, 1);
 
 				//eh objetivo
-				}else if(i == goal.x && j == goal.y){
+				}else if(i == this->goal.x && j == this->goal.y){
 					tempGrid->Set_PF(i, j, 0);
 
 				//eh qualquer outra coisa
@@ -245,6 +243,8 @@ void OccupancyGrid::UpdatePotentialFields(){
 	}
 
 	this->ToStringPF();
+
+	// delete(tempGrid);
 
 	ROS_INFO("PF Finished.");
 
@@ -312,5 +312,54 @@ void OccupancyGrid::ToStringPF(){
 	of.open(filename.c_str(), std::ofstream::trunc);
 	of << ss.str();
 	of.close();			
+
+}
+
+Vector2D OccupancyGrid::GetGoal(){
+
+	return this->goal;
+
+}
+
+void OccupancyGrid::SetGoal(Vector2D vec){
+
+	this->goal = vec;
+
+}
+
+void OccupancyGrid::PathPlanning(geometry_msgs::Pose2D pose){
+
+	std::queue<Vector2D> path;
+
+	Vector2D curr;
+	curr.x = pose.x;
+	curr.y = pose.y;
+
+	//enquanto nao atingir o alvo, procura a posição com
+	//o menor valor.
+	while(curr.x != goal.x && curr.y != goal.y){
+
+		path.push(curr);
+		curr = this->GetNextPosition(curr);
+	}
+
+	this->ShowPath(path);
+
+}
+
+Vector2D OccupancyGrid::GetNextPosition(Vector2D curr){
+
+	Vector2D nextPos = curr;
+
+	for(int i = curr.y -1; i <= curr.y + 1; i++){
+		for(int j = curr.x -1; j <= curr.x +1; j++){
+			if(this->Get(j, i) < this->Get(nextPos.x, nextPos.y)){
+				nextPos.x = j;
+				nextPos.y = i;
+			}
+		}
+	}
+
+	return nextPos;
 
 }
