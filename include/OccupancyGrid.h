@@ -42,6 +42,7 @@ public:
 	std::string ToMap();
 	void LoadMap(std::string);
 	void UpdatePotentialFields();
+	void ToStringPF();
 };
 
 #endif /* OCCUPATION_GRID_H */

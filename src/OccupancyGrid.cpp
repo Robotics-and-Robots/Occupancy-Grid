@@ -230,6 +230,72 @@ void OccupancyGrid::UpdatePotentialFields(){
 		
 	}
 
-	// this->ToStringPF();
+	this->ToStringPF();
+
+}
+
+void OccupancyGrid::ToStringPF(){
+
+	std::ofstream of;
+	std::stringstream ss;
+	std::string filename = "/home/darlan/Darlan/potentialfields.html";
+
+	ss << "<html>\n"
+		<< "<head>\n"
+		<< "<meta http-equiv=\"refresh\" content=\"2\" />\n"
+		<< "</head>\n"
+	   	<< "<body style='background:black;'>\n"
+	   	<< "<div style='text-align:center;margin:auto;'>\n"
+		<< "<h3 style='color:white;font-family:sans'>Occupancy Grid</h3><br />\n"
+		<< "<svg style='width:" << OG_WIDTH << "px; height:" << OG_HEIGHT << "px; display:block; margin:auto'>\n";
+
+	int w = 0; 
+	int h = 0;
+
+	//from the maximum Y to the minimum Y, do
+	for(int y = OG_SEC_H; y > -OG_SEC_H; y--){
+
+		//from the minimum X to the maximum X, do
+		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
+
+			//convert cell values to a grayscale color
+			double gfcolor = this->Get(x, -y);
+			uint32_t gscolor = this->Get(x, -y);
+			
+			//ignore cell without any value
+			if (gscolor == 1){
+				
+				//add a pixel with the generated color to the bytestream
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				ss << " fill='cyan' /> ";
+
+			} else if (gscolor != 0){
+				
+				gscolor = (gfcolor * 255);
+
+				//add a pixel with the generated color to the bytestream
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				ss << " fill='#" << std::hex << (gscolor) << "' /> ";
+			}
+
+			w++;
+		}
+
+		h++;
+		w = 0;
+	}
+
+
+	ss << "<line x1='" << std:: dec << 0 << "' y1='" << OG_HEIGHT/2 << "' x2='" << OG_WIDTH << "' y2='" << OG_HEIGHT/2 << "' stroke=red />";
+	ss << "<line x1='" << OG_WIDTH/2  << "' y1='0' x2='" << OG_WIDTH/2 << "' y2='" << OG_HEIGHT << "' stroke=red />";
+
+
+	ss << "</svg></div>"
+		<< "</body>"
+		<< "</html>";
+
+	of.open(filename.c_str(), std::ofstream::trunc);
+	of << ss.str();
+	of.close();			
 
 }
