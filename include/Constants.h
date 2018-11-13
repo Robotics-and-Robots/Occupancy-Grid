@@ -21,7 +21,7 @@ typedef double      OGCellType;
 
 /* Potential fields */
 #define PF_THRESHOLD ((HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN) / 2)  /* threshould (wall if >= 50%) */
-#define PF_ITERATIONS OG_HEIGHT*2 
+#define PF_ITERATIONS OG_HEIGHT*15 
 
 /* Hokuyo */
 #define HOKUYO_ANGLE_MIN -2.356194

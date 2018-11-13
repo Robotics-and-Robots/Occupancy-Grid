@@ -227,7 +227,7 @@ void OccupancyGrid::UpdatePotentialFields(){
 
 				//eh objetivo
 				}else if(i == this->goal.x && j == this->goal.y){
-					tempGrid->Set_PF(i, j, 0);
+					tempGrid->Set_PF(i, j, -2);
 
 				//eh qualquer outra coisa
 				}else{
