@@ -133,3 +133,25 @@ void OccupancyGrid::ToFile(std::string filename){
 	of << ss.str();
 	of.close();
 }
+
+std::string OccupancyGrid::ToMap(){
+
+	std::stringstream ss; 
+	double temp_val;
+
+	for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
+		for(int j = -OG_HEIGHT; j < OG_HEIGHT; j++){
+			temp_val = this->Get(i,j);
+
+			if(temp_val >= PF_THRESHOLD)
+				ss << "1";
+			else
+				ss << "0";
+
+		}
+		ss << std::endl;
+	}
+
+	return ss.str();
+
+}

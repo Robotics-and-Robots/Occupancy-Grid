@@ -12,6 +12,8 @@
 #include "geometry_msgs/Twist.h"						// Twist - message for motion
 #include "geometry_msgs/Pose2D.h"
 #include "nav_msgs/Odometry.h"
+#include <sstream>
+#include <fstream>
 
 //configurations
 #include "../include/Constants.h"
@@ -216,7 +218,17 @@ double toEulerAngle(double x, double y, double z, double w){
 
 void keyboardCallback(const geometry_msgs::Twist& twist){
 
-	
-	ROS_INFO("keyboardCallback");
+	if(twist.linear.x == 12 && twist.linear.y == 12){
+
+		std::ofstream of;
+		std::string filename = "/home/darlan/Desktop/map.map";
+
+		of.open(filename.c_str(), std::ofstream::trunc);
+		of << _occupancy_grid->ToMap();
+
+		
+		of.close();
+
+	}
 
 }

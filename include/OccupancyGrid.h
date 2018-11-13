@@ -39,6 +39,7 @@ public:
 
 	std::string ToString();
 	void ToFile(std::string filename);
+	std::string ToMap();
 };
 
 #endif /* OCCUPATION_GRID_H */
