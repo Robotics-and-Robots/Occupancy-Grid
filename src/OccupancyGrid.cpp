@@ -275,8 +275,8 @@ void OccupancyGrid::ToStringPF(){
 		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
 
 			//convert cell values to a grayscale color
-			double gfcolor = this->Get(x, -y);
-			int32_t gscolor = this->Get(x, -y);
+			double 	gfcolor 	= this->Get(x, -y);
+			uint32_t gscolor 	= 255 * this->Get(x, -y);
 			
 			//ignore cell without any value
 			if (gfcolor == 1){
@@ -287,21 +287,10 @@ void OccupancyGrid::ToStringPF(){
 
 			} else if (gfcolor != 0){
 
-				if(gfcolor > 0.5){
-
 					//add a pixel with the generated color to the bytestream
 					ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-					ss << " fill='cyan' /> ";
+					ss << " fill='#FF" << std::hex << std::setw(2) << std::setfill('0') << gscolor << "FF' /> ";
 
-				}else{
-
-					ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-					ss << " fill='green' /> ";
-
-				}
-				
-				// gscolor = (gfcolor * 255);
-				// gscolor = std::max(gscolor, 255);
 			}
 
 			w++;
