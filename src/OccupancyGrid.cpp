@@ -202,6 +202,16 @@ void OccupancyGrid::UpdatePotentialFields(){
 
 	ROS_INFO("Starting Potential Fields.");
 
+	for(int i = -OG_SEC_W; i < OG_SEC_W; i++){
+		this->Set(i, -OG_SEC_H, 1);
+		this->Set(i, +OG_SEC_H, 1);
+	}
+
+	for(int i = -OG_SEC_H; i < OG_SEC_H; i++){
+		this->Set(-OG_SEC_W, i, 1);
+		this->Set(+OG_SEC_W, i, 1);
+	}
+
 	//repete algorithm k vezes
 	for(int k = 0; k < PF_ITERATIONS; k++){
 
