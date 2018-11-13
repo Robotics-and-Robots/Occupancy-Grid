@@ -83,7 +83,7 @@ void OccupancyGrid::ToFile(std::string filename){
 
 	ss << "<html>\n"
 		<< "<head>\n"
-		<< "<meta http-equiv=\"refresh\" content=\"1\" />\n"
+		<< "<meta http-equiv=\"refresh\" content=\"2\" />\n"
 		<< "</head>\n"
 	   	<< "<body style='background:black;'>\n"
 	   	<< "<div style='text-align:center;margin:auto;'>\n"
@@ -101,22 +101,23 @@ void OccupancyGrid::ToFile(std::string filename){
 
 			//convert cell values to a grayscale color
 			uint32_t gscolor = this->Get(x, y);
-
-			if(gscolor == 0) continue;
-
-		        gscolor = gscolor * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
-
-			ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-
+			
 			//if the cell is over the x- or y-axis, print it as purple
-			if(x == 0 || y == 0){
-				ss << " fill='red' ";
-			}else{
-				ss << " fill='#" << std::hex << gscolor << gscolor << gscolor << "' ";
+			//if(x == 0 || y == 0){
+			//	ss << " fill='red' ";
+			//}else 
+			
+			if (gscolor > 1){
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				gscolor = gscolor * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
+				//if the cell is over the x- or y-axis, print it as purple
+				// if(x == 0 || y == 0){
+				// 	ss << " fill='red' ";
+				// }else{
+					ss << " fill='#" << std::hex << gscolor << gscolor << gscolor << "' ";
+				// }
+				ss << " /> ";
 			}
-
-			ss << " /> ";
-
 			w++;
 		}
 
@@ -124,7 +125,12 @@ void OccupancyGrid::ToFile(std::string filename){
 		w = 0;
 	}
 
-	ss << "</div></svg>"
+
+	ss << "<line x1='" << std:: dec << 0 << "' y1='" << OG_HEIGHT/2 << "' x2='" << OG_WIDTH << "' y2='" << OG_HEIGHT/2 << "' stroke=red />";
+	ss << "<line x1='" << OG_WIDTH/2  << "' y1='0' x2='" << OG_WIDTH/2 << "' y2='" << OG_HEIGHT << "' stroke=red />";
+
+
+	ss << "</svg></div>"
 		<< "</body>"
 		<< "</html>";
 
