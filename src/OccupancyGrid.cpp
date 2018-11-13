@@ -276,7 +276,7 @@ void OccupancyGrid::ToStringPF(){
 
 			//convert cell values to a grayscale color
 			double 	gfcolor 	= this->Get(x, -y);
-			uint32_t gscolor 	= 255*255*255 * this->Get(x, -y);
+			uint32_t gscolor 	= 255 * this->Get(x, -y);
 			
 			//ignore cell without any value
 			if (gfcolor == 1){
@@ -285,11 +285,17 @@ void OccupancyGrid::ToStringPF(){
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
 				ss << " fill='yellow' /> ";
 
+			} else if (gfcolor == 2){
+
+				//add a pixel with the generated color to the bytestream
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				ss << " fill='#B233FF' /> ";
+
 			} else if (gfcolor != 0){
 
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='#" << std::hex << std::setw(6) << std::setfill('0') << gscolor << "' /> ";
+				ss << " fill='#00" << std::hex << std::setw(2) << std::setfill('0') << gscolor << "00' /> ";
 
 			}
 
@@ -335,20 +341,25 @@ void OccupancyGrid::PathPlanning(geometry_msgs::Pose2D pose){
 	curr.x = pose.x;
 	curr.y = pose.y;
 
+	int i = 0;
 	//enquanto nao atingir o alvo, procura a posição com
 	//o menor valor.
-	while(curr.x != goal.x && curr.y != goal.y){
+	// while(curr.x != goal.x && curr.y != goal.y){
+	while(i < 100){
 
 		path.push(curr);
 		curr = this->GetNextPosition(curr);
-
 
 		if(curr.x == pose.x && curr.y == pose.y){
 			ROS_INFO("TENTEI MAS NAO ROLOU");
 			return;
 		}
 
+		i++;
+
 	}
+
+	ROS_INFO("Planning executed.");
 
 	this->ShowPath(path);
 
