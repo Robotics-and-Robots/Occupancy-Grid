@@ -187,7 +187,7 @@ void OccupancyGrid::LoadMap(std::string filename){
 			in >> temp_val;
 
 			if(temp_val != 0)
-				this->Set(i,j, HIMM_THRESHOLD_MAX - 1);	
+				this->Set(i,j, 1);	
 		}
 	}
 
@@ -341,6 +341,13 @@ void OccupancyGrid::PathPlanning(geometry_msgs::Pose2D pose){
 
 		path.push(curr);
 		curr = this->GetNextPosition(curr);
+
+
+		if(curr.x == pose.x && curr.y == pose.y){
+			ROS_INFO("TENTEI MAS NAO ROLOU");
+			return;
+		}
+
 	}
 
 	this->ShowPath(path);
