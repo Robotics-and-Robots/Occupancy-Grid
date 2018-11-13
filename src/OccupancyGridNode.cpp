@@ -263,3 +263,24 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 			break;
 	}
 }
+
+std::queue<Vector2D> OccupancyGrid::GetPath(){
+
+	return this->path;
+
+}
+
+void FollowPath(){
+
+	std::queue<Vector2D> path;
+	path = _occupancy_grid->GetPath();
+
+	Vector2D nexPos;
+
+	for(int i = 0; i < 1000; i++){
+		
+		nexPos = path.front();
+
+	}
+
+}

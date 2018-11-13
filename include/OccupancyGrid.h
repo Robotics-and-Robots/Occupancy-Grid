@@ -26,6 +26,7 @@ private:
 	OGCellType _m_negneg[OG_SEC_W +1][OG_SEC_H +1]; //X is negative, Y is negetive.
 
 	Vector2D goal;
+	std::queue<Vector2D> path;
 
 public:
 
@@ -35,6 +36,7 @@ public:
 	
 	//overload [] to access as an array
 	OGCellType Get(int x, int y);
+	std::queue<Vector2D> GetPath();
 	Vector2D GetGoal();
 	
 	//set some value to a cell
@@ -54,6 +56,7 @@ public:
 	void PathPlanning(geometry_msgs::Pose2D);
 	Vector2D GetNextPosition(Vector2D curr);
 	void ShowPath(std::queue<Vector2D> path);
+	void FollowPath();
 };
 
 #endif /* OCCUPATION_GRID_H */

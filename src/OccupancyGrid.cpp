@@ -375,6 +375,8 @@ void OccupancyGrid::PathPlanning(geometry_msgs::Pose2D pose){
 
 	ROS_INFO("Planning executed.");
 
+	this->path = path;
+
 	this->ShowPath(path);
 
 }
