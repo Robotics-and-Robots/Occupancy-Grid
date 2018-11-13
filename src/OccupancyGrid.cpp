@@ -224,13 +224,13 @@ void OccupancyGrid::UpdatePotentialFields(){
 					double meanNeighs = (
 						this->Get(i + 1, j) +
 						this->Get(i - 1, j) +
-						// this->Get(i + 1, j + 1) +
-						// this->Get(i - 1, j + 1) +
+						this->Get(i + 1, j + 1) +
+						this->Get(i - 1, j + 1) +
 						this->Get(i,     j + 1) +
-						// this->Get(i + 1, j - 1) +
-						// this->Get(i - 1, j - 1) +
+						this->Get(i + 1, j - 1) +
+						this->Get(i - 1, j - 1) +
 						this->Get(i    , j - 1)
-					) / 4;
+					) / 8;
 
 					tempGrid->Set_PF(i, j, meanNeighs);
 				}
@@ -287,9 +287,9 @@ void OccupancyGrid::ToStringPF(){
 
 			} else if (gfcolor != 0){
 
-					//add a pixel with the generated color to the bytestream
-					ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-					ss << " fill='#" << std::hex << std::setw(6) << std::setfill('0') << gscolor << "' /> ";
+				//add a pixel with the generated color to the bytestream
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				ss << " fill='#" << std::hex << std::setw(6) << std::setfill('0') << gscolor << "' /> ";
 
 			}
 
