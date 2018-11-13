@@ -245,7 +245,7 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 
 
 		case 16: // potencial field
-			vec.x = - OG_SEC_W /2;
+			vec.x = OG_SEC_W /2;
 			vec.y = OG_SEC_H /2;
 			_occupancy_grid->SetGoal(vec);
 			_occupancy_grid->UpdatePotentialFields();

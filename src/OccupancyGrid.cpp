@@ -200,6 +200,8 @@ void OccupancyGrid::UpdatePotentialFields(){
 	OccupancyGrid* tempGrid;
 	tempGrid = new OccupancyGrid();
 
+	ROS_INFO("Starting Potential Fields.");
+
 	//repete algorithm k vezes
 	for(int k = 0; k < PF_ITERATIONS; k++){
 
@@ -246,7 +248,7 @@ void OccupancyGrid::UpdatePotentialFields(){
 
 	// delete(tempGrid);
 
-	ROS_INFO("PF Finished.");
+	ROS_INFO("Potential Fields Finished.");
 
 }
 
@@ -283,13 +285,13 @@ void OccupancyGrid::ToStringPF(){
 				
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='yellow' /> ";
+				ss << " fill='white' /> ";
 
 			} else if (gfcolor == 2){
 
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='#B233FF' /> ";
+				ss << " fill='red' /> ";
 
 			} else if (gfcolor != 0){
 
@@ -341,11 +343,13 @@ void OccupancyGrid::PathPlanning(geometry_msgs::Pose2D pose){
 	curr.x = pose.x;
 	curr.y = pose.y;
 
+	ROS_INFO("Starting planning.");
+
 	int i = 0;
 	//enquanto nao atingir o alvo, procura a posição com
 	//o menor valor.
 	// while(curr.x != goal.x && curr.y != goal.y){
-	while(i < 100){
+	while(i < 1000){
 
 		path.push(curr);
 		curr = this->GetNextPosition(curr);
