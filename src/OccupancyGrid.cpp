@@ -57,6 +57,20 @@ OGCellType OccupancyGrid::Set(int x, int y, OGCellType cvalue){
 		return (y >= 0) ? (_m_negpos[a][b] = newValue) : (_m_negneg[a][b] = newValue);
 }
 
+OGCellType OccupancyGrid::Set_PF(int x, int y, OGCellType cvalue){
+	
+	int a = std::abs(x);
+	int b = std::abs(y);
+
+	if(a >= OG_SEC_W) return 0;
+	if(b >= OG_SEC_H) return 0;
+	
+	if(x >= 0) 
+		return (y >= 0) ? (_m_pospos[a][b] = cvalue) : (_m_posneg[a][b] = cvalue);
+	else
+		return (y >= 0) ? (_m_negpos[a][b] = cvalue) : (_m_negneg[a][b] = cvalue);
+}
+
 /**
  * Set all cell values to zeroes
  */
@@ -139,8 +153,8 @@ std::string OccupancyGrid::ToMap(){
 	std::stringstream ss; 
 	double temp_val;
 
-	for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
-		for(int j = -OG_HEIGHT; j < OG_HEIGHT; j++){
+	for(int i = -OG_SEC_W; i < OG_SEC_W; i++){
+		for(int j = -OG_SEC_H; j < OG_SEC_H; j++){
 			temp_val = this->Get(i,j);
 
 			if(temp_val >= PF_THRESHOLD)
@@ -166,8 +180,8 @@ void OccupancyGrid::LoadMap(std::string filename){
     	return;
   	}
 
-	for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
-		for(int j = -OG_HEIGHT; j < OG_HEIGHT; j++){
+	for(int i = -OG_SEC_W; i < OG_SEC_W; i++){
+		for(int j = -OG_SEC_H; j < OG_SEC_H; j++){
 			in >> temp_val;
 
 			if(temp_val != 0)
@@ -192,45 +206,47 @@ void OccupancyGrid::UpdatePotentialFields(){
 	for(int k = 0; k < PF_ITERATIONS; k++){
 
 		//popula segunda grid
-		for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
-			for(int j = -OG_HEIGHT; i < OG_HEIGHT; i++){
+		for(int i = -OG_SEC_W; i < OG_SEC_W; i++){
+			for(int j = -OG_SEC_H; j < OG_SEC_H; j++){
 				double currentValue;
 				currentValue = this->Get(i, j);
 
 				//eh parede
 				if(currentValue == 1){
-					tempGrid->Set(i, j, 1);
+					tempGrid->Set_PF(i, j, 1);
 
 				//eh objetivo
 				}else if(i == goal.x && j == goal.y){
-					tempGrid->Set(i, j, 0);
+					tempGrid->Set_PF(i, j, 0);
 
 				//eh qualquer outra coisa
 				}else{
 					double meanNeighs = (
 						this->Get(i + 1, j) +
 						this->Get(i - 1, j) +
-						this->Get(i + 1, j + 1) +
-						this->Get(i - 1, j + 1) +
+						// this->Get(i + 1, j + 1) +
+						// this->Get(i - 1, j + 1) +
 						this->Get(i,     j + 1) +
-						this->Get(i + 1, j - 1) +
-						this->Get(i - 1, j - 1) +
+						// this->Get(i + 1, j - 1) +
+						// this->Get(i - 1, j - 1) +
 						this->Get(i    , j - 1)
-					) / 8;
+					) / 4;
 
-					tempGrid->Set(i, j, meanNeighs);
+					tempGrid->Set_PF(i, j, meanNeighs);
 				}
 			}
 		}
 
 		//copia grade gerada para a grade principal
-		for(int i = -OG_WIDTH; i < OG_WIDTH; i++)
-			for(int j = -OG_HEIGHT; i < OG_HEIGHT; i++)
-				this->Set(i, j, tempGrid->Get(i, j));
+		for(int i = -OG_SEC_W; i < OG_SEC_W; i++)
+			for(int j = -OG_SEC_H; j < OG_SEC_H; j++)
+				this->Set_PF(i, j, tempGrid->Get(i, j));
 		
 	}
 
 	this->ToStringPF();
+
+	ROS_INFO("PF Finished.");
 
 }
 
@@ -260,7 +276,7 @@ void OccupancyGrid::ToStringPF(){
 
 			//convert cell values to a grayscale color
 			double gfcolor = this->Get(x, -y);
-			uint32_t gscolor = this->Get(x, -y);
+			int32_t gscolor = this->Get(x, -y);
 			
 			//ignore cell without any value
 			if (gscolor == 1){
@@ -272,6 +288,7 @@ void OccupancyGrid::ToStringPF(){
 			} else if (gscolor != 0){
 				
 				gscolor = (gfcolor * 255);
+				gscolor = std::max(gscolor, 255);
 
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";

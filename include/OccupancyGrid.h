@@ -17,10 +17,10 @@ typedef double OGCellType;
 class OccupancyGrid{
 
 private:
-	OGCellType _m_pospos[OG_SEC_W][OG_SEC_H]; //X is positive, Y is positive.
-	OGCellType _m_posneg[OG_SEC_W][OG_SEC_H]; //X is positive, Y is negative.
-	OGCellType _m_negpos[OG_SEC_W][OG_SEC_H]; //X is negative, Y is positive.
-	OGCellType _m_negneg[OG_SEC_W][OG_SEC_H]; //X is negative, Y is negetive.
+	OGCellType _m_pospos[OG_SEC_W +1][OG_SEC_H +1]; //X is positive, Y is positive.
+	OGCellType _m_posneg[OG_SEC_W +1][OG_SEC_H +1]; //X is positive, Y is negative.
+	OGCellType _m_negpos[OG_SEC_W +1][OG_SEC_H +1]; //X is negative, Y is positive.
+	OGCellType _m_negneg[OG_SEC_W +1][OG_SEC_H +1]; //X is negative, Y is negetive.
 
 public:
 
@@ -33,6 +33,7 @@ public:
 	
 	//set some value to a cell
 	OGCellType Set(int x, int y, OGCellType value);
+	OGCellType Set_PF(int x, int y, OGCellType cvalue);
 	OGCellType SetLoc(Pose2D pose, OGCellType dist, OGCellType theta);
 
 	void Reset();
