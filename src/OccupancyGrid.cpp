@@ -202,14 +202,14 @@ void OccupancyGrid::UpdatePotentialFields(){
 
 	ROS_INFO("Starting Potential Fields.");
 
-	for(int i = -OG_SEC_W; i < OG_SEC_W; i++){
-		this->Set(i, -OG_SEC_H, 1);
-		this->Set(i, +OG_SEC_H, 1);
+	for(int i = -OG_SEC_W + 1; i < OG_SEC_W -1; i++){
+		this->Set_PF(i, -OG_SEC_H +1, 1);
+		this->Set_PF(i, +OG_SEC_H -1, 1);
 	}
 
-	for(int i = -OG_SEC_H; i < OG_SEC_H; i++){
-		this->Set(-OG_SEC_W, i, 1);
-		this->Set(+OG_SEC_W, i, 1);
+	for(int j = -OG_SEC_H + 1; j < OG_SEC_H -1; j++){
+		this->Set_PF(-OG_SEC_W +1, j, 1);
+		this->Set_PF(+OG_SEC_W -1, j, 1);
 	}
 
 	//repete algorithm k vezes
@@ -301,7 +301,7 @@ void OccupancyGrid::ToStringPF(){
 
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='red' /> ";
+				ss << " fill='yellow' /> ";
 
 			} else if (gfcolor != 0){
 
