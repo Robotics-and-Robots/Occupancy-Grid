@@ -144,14 +144,37 @@ std::string OccupancyGrid::ToMap(){
 			temp_val = this->Get(i,j);
 
 			if(temp_val >= PF_THRESHOLD)
-				ss << "1";
+				ss << "1 ";
 			else
-				ss << "0";
+				ss << "0 ";
 
 		}
 		ss << std::endl;
 	}
 
 	return ss.str();
+
+}
+
+void OccupancyGrid::LoadMap(std::string filename){
+
+	std::ifstream in(filename.c_str());
+	double temp_val;
+
+	if (!in) {
+		ROS_INFO("Cannot open file.");
+    	return;
+  	}
+
+	for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
+		for(int j = -OG_HEIGHT; j < OG_HEIGHT; j++){
+			in >> temp_val;
+
+			if(temp_val != 0)
+				this->Set(i,j, HIMM_THRESHOLD_MAX - 1);	
+		}
+	}
+
+	in.close();
 
 }

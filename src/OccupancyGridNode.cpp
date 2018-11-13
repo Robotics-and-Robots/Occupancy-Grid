@@ -33,6 +33,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
 double toEulerAngle(double x, double y, double z, double w);
 
 //Global Variables
+bool HOKUYO_DISABLE = false;
 ros::Publisher pub_velocity;
 
 //global occupancy grid, hmmi and potential fields
@@ -88,26 +89,28 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 	// ROS_INFO("min_angle [%f] max_angle [%f]", scan->angle_min, scan->angle_max);
 	// ROS_INFO("angle_increment [%f]", scan->angle_increment);
 	// ROS_INFO("range_min [%f] range_max [%f]", scan->range_min, scan->range_max);
+
+	if (HOKUYO_DISABLE == false){
 	
-	//update occupancy grid for all ranges
-	double  i = HOKUYO_ANGLE_MIN;
-	int     j = 0;
+		//update occupancy grid for all ranges
+		double  i = HOKUYO_ANGLE_MIN;
+		int     j = 0;
 
-	while(i <= HOKUYO_ANGLE_MAX){
+		while(i <= HOKUYO_ANGLE_MAX){
 
-		if((j % HOKUYO_LASER_SKIP) == 0){
+			if((j % HOKUYO_LASER_SKIP) == 0){
 
-			reading = scan->ranges[j];
+				reading = scan->ranges[j];
 
-			if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !std::isnan(reading)){
-				_himm->UpdateLocation(_pos, reading, i);
+				if(reading <= HOKUYO_RANGE_MAX && reading >= HOKUYO_RANGE_MIN && !std::isnan(reading)){
+					_himm->UpdateLocation(_pos, reading, i);
+				}
 			}
+
+			i += HOKUYO_ANGLE_INC;
+			j++;
 		}
-
-		i += HOKUYO_ANGLE_INC;
-		j++;
 	}
-
     //update occupancy grid for all ranges
 	// double i = HOKUYO_ANGLE_MIN;
 	// int j = 0;
@@ -218,17 +221,27 @@ double toEulerAngle(double x, double y, double z, double w){
 
 void keyboardCallback(const geometry_msgs::Twist& twist){
 
-	if(twist.linear.x == 12 && twist.linear.y == 12){
+	uint32_t option = twist.linear.x;
+	std::ofstream of;
 
-		std::ofstream of;
-		std::string filename = "/home/darlan/Desktop/map.map";
+	switch (option)
+	{
+		case 12: //salva mapa
+			of.open("/home/darlan/Desktop/map.map", std::ofstream::trunc);
+			of << _occupancy_grid->ToMap();
+			of.close();
+			break;
+	
+		case 14: //disable hokuyo
+			HOKUYO_DISABLE = true;
+			break;
 
-		of.open(filename.c_str(), std::ofstream::trunc);
-		of << _occupancy_grid->ToMap();
+		case 15: //enable hokuyo
+			HOKUYO_DISABLE = false;	
+			break;
 
-		
-		of.close();
-
+		case 16: //load map
+			_occupancy_grid->LoadMap("/home/darlan/Desktop/map.map");
+			break;
 	}
-
 }
