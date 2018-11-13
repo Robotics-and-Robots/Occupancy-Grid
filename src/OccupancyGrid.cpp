@@ -279,20 +279,29 @@ void OccupancyGrid::ToStringPF(){
 			int32_t gscolor = this->Get(x, -y);
 			
 			//ignore cell without any value
-			if (gscolor == 1){
+			if (gfcolor == 1){
 				
 				//add a pixel with the generated color to the bytestream
 				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='cyan' /> ";
+				ss << " fill='yellow' /> ";
 
-			} else if (gscolor != 0){
+			} else if (gfcolor != 0){
+
+				if(gfcolor > 0.5){
+
+					//add a pixel with the generated color to the bytestream
+					ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+					ss << " fill='cyan' /> ";
+
+				}else{
+
+					ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+					ss << " fill='green' /> ";
+
+				}
 				
-				gscolor = (gfcolor * 255);
-				gscolor = std::max(gscolor, 255);
-
-				//add a pixel with the generated color to the bytestream
-				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
-				ss << " fill='#" << std::hex << (gscolor) << "' /> ";
+				// gscolor = (gfcolor * 255);
+				// gscolor = std::max(gscolor, 255);
 			}
 
 			w++;
