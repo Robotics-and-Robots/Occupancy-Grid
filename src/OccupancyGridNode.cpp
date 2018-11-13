@@ -141,7 +141,7 @@ void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 * 	@Description:	Forward and backward motion based on desired velocity and distance.
 *
 */
-void move(double speed, double distance, bool isForward){
+void move(double speed, double angle, double distance, bool isForward){
 
 	// Motion message (angular and linear x, y and z )
 	geometry_msgs::Twist vel_msg;
@@ -156,6 +156,8 @@ void move(double speed, double distance, bool isForward){
 		vel_msg.linear.x = -abs(speed);
 
 	}
+
+	vel_msg.angular.z = angle;
 
 	// Anulates velocity in "y" and "z" axis 
 	vel_msg.linear.y = 0;
@@ -261,6 +263,10 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 		case 18: // potencial field
 			_occupancy_grid->PathPlanning(_pos);
 			break;
+
+		case 20: // 
+			_occupancy_grid->FollowPath();
+			break;
 	}
 }
 
@@ -270,17 +276,25 @@ std::queue<Vector2D> OccupancyGrid::GetPath(){
 
 }
 
-void FollowPath(){
+void OccupancyGrid::FollowPath(){
 
 	std::queue<Vector2D> path;
 	path = _occupancy_grid->GetPath();
 
-	Vector2D nexPos;
+	Vector2D nextPos;
+	geometry_msgs::Twist vel_msg;
+	double hipotenusa = 0;
+	double angle = 0;
 
-	for(int i = 0; i < 1000; i++){
+	for(int i = 0; i < path.size(); i++){
 		
-		nexPos = path.front();
+		nextPos 	= path.front();
+		hipotenusa 	= sqrt((pow(nextPos.x, 2) + pow(nextPos.y, 2)));
+		angle 		= acos(nextPos.x/hipotenusa);
 
+		move(1, _pos.theta + angle, 0.1, true);
+		
+		path.pop();
 	}
 
 }
