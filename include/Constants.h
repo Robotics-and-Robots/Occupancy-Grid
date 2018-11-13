@@ -5,7 +5,7 @@
 typedef double      OGCellType;
 
 /* Himm configuration */
-#define HIMM_THRESHOLD_MAX 15
+#define HIMM_THRESHOLD_MAX 10
 #define HIMM_THRESHOLD_MIN 0
 
 /* Potential fields */

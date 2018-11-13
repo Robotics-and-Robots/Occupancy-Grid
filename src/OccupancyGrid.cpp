@@ -100,7 +100,7 @@ void OccupancyGrid::ToFile(std::string filename){
 		for(int x = -OG_SEC_W; x < OG_SEC_W; x++){
 
 			//convert cell values to a grayscale color
-			uint32_t gscolor = this->Get(x, y);
+			uint32_t gscolor = this->Get(x, -y);
 			
 			//ignore cell without any value
 			if (gscolor > 1){

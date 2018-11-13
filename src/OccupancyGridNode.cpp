@@ -25,6 +25,7 @@ using namespace geometry_msgs;
 
 //Prototypes
 void hokuyoCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
+void keyboardCallback(const geometry_msgs::Twist& twist);
 void move(double, double , bool);
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg); 
 double toEulerAngle(double x, double y, double z, double w);
@@ -50,10 +51,13 @@ int main(int argc,char **argv)
 	ros::NodeHandle n;
 
 	//subscribe to Hokuyo node (laser)
-	ros::Subscriber sub_scan = n.subscribe("/scan", 1, hokuyoCallback);
+	ros::Subscriber sub_scan 		= n.subscribe("/scan", 1, hokuyoCallback);
 
 	//subscribe to Odom node (odometry and movement)
-	ros::Subscriber sub_odom = n.subscribe("/odom", 1, odomCallback);
+	ros::Subscriber sub_odom 		= n.subscribe("/odom", 1, odomCallback);
+
+	//get keyboard click
+	ros::Subscriber sub_keyboard 	= n.subscribe("/keyboardClick", 1, keyboardCallback);
 
 	// Defines robot motion publisher
 	pub_velocity = n.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/navi", 10);	
@@ -208,4 +212,11 @@ double toEulerAngle(double x, double y, double z, double w){
 	double siny = +2.0 * 		(w * z + x * y);
 	double cosy = +1.0 - 2.0 * 	(y * y + z * z);  
 	return atan2(siny, cosy); 
+}
+
+void keyboardCallback(const geometry_msgs::Twist& twist){
+
+	
+	ROS_INFO("keyboardCallback");
+
 }
