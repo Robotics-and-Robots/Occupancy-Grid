@@ -102,22 +102,17 @@ void OccupancyGrid::ToFile(std::string filename){
 			//convert cell values to a grayscale color
 			uint32_t gscolor = this->Get(x, y);
 			
-			//if the cell is over the x- or y-axis, print it as purple
-			//if(x == 0 || y == 0){
-			//	ss << " fill='red' ";
-			//}else 
-			
+			//ignore cell without any value
 			if (gscolor > 1){
-				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				
+				//convert cell value to grayscale
 				gscolor = gscolor * (255 / (HIMM_THRESHOLD_MAX - HIMM_THRESHOLD_MIN));
-				//if the cell is over the x- or y-axis, print it as purple
-				// if(x == 0 || y == 0){
-				// 	ss << " fill='red' ";
-				// }else{
-					ss << " fill='#" << std::hex << gscolor << gscolor << gscolor << "' ";
-				// }
-				ss << " /> ";
+
+				//add a pixel with the generated color to the bytestream
+				ss << std::dec << "<rect x='" << (x + OG_SEC_W) << "' y='" << (y + OG_SEC_H) << "' width=1 height=1 ";
+				ss << " fill='#" << std::hex << gscolor << gscolor << gscolor << "' /> ";
 			}
+
 			w++;
 		}
 
