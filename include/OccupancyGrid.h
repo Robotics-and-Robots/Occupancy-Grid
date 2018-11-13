@@ -7,6 +7,8 @@
 #include "Vector2D.hpp"
 #include "Constants.h"
 
+#include <queue>
+
 
 using namespace geometry_msgs;
 
@@ -51,6 +53,7 @@ public:
 	void ToStringPF();
 	void PathPlanning(geometry_msgs::Pose2D);
 	Vector2D GetNextPosition(Vector2D curr);
+	void ShowPath(std::queue<Vector2D> path);
 };
 
 #endif /* OCCUPATION_GRID_H */

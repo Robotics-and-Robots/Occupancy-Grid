@@ -363,3 +363,20 @@ Vector2D OccupancyGrid::GetNextPosition(Vector2D curr){
 	return nextPos;
 
 }
+
+
+
+void OccupancyGrid::ShowPath(std::queue<Vector2D> path){
+
+	Vector2D curr;
+	for(int i = 0; i < path.size(); i++){
+
+		curr = path.front();
+		this->Set(curr.x, curr.y, 2);
+		path.pop();
+
+	}
+
+	this->ToStringPF();
+
+}

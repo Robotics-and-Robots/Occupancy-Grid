@@ -20,7 +20,6 @@
 
 //algorithms and data structures
 #include "../include/OccupancyGrid.h"
-#include "../include/PotentialFields.h"
 #include "../include/Himm.h"
 
 using namespace geometry_msgs;
@@ -38,7 +37,6 @@ ros::Publisher pub_velocity;
 
 //global occupancy grid, hmmi and potential fields
 OccupancyGrid* 		_occupancy_grid;
-PotentialFields* 	_potential_fields;
 Himm*               _himm;
 														
 //global position vector (updated in odom callback)
