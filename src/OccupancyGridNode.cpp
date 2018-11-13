@@ -243,5 +243,9 @@ void keyboardCallback(const geometry_msgs::Twist& twist){
 		case 16: //load map
 			_occupancy_grid->LoadMap("/home/darlan/Desktop/map.map");
 			break;
+
+		case 17: // potencial field
+			_occupancy_grid->UpdatePotentialFields();
+			break;
 	}
 }

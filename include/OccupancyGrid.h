@@ -41,6 +41,7 @@ public:
 	void ToFile(std::string filename);
 	std::string ToMap();
 	void LoadMap(std::string);
+	void UpdatePotentialFields();
 };
 
 #endif /* OCCUPATION_GRID_H */

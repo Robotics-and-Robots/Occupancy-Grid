@@ -178,3 +178,58 @@ void OccupancyGrid::LoadMap(std::string filename){
 	in.close();
 
 }
+
+void OccupancyGrid::UpdatePotentialFields(){
+
+	Vector2D goal;
+	goal.x = 1;
+	goal.y = 1;
+
+	OccupancyGrid* tempGrid;
+	tempGrid = new OccupancyGrid();
+
+	//repete algorithm k vezes
+	for(int k = 0; k < PF_ITERATIONS; k++){
+
+		//popula segunda grid
+		for(int i = -OG_WIDTH; i < OG_WIDTH; i++){
+			for(int j = -OG_HEIGHT; i < OG_HEIGHT; i++){
+				double currentValue;
+				currentValue = this->Get(i, j);
+
+				//eh parede
+				if(currentValue == 1){
+					tempGrid->Set(i, j, 1);
+
+				//eh objetivo
+				}else if(i == goal.x && j == goal.y){
+					tempGrid->Set(i, j, 0);
+
+				//eh qualquer outra coisa
+				}else{
+					double meanNeighs = (
+						this->Get(i + 1, j) +
+						this->Get(i - 1, j) +
+						this->Get(i + 1, j + 1) +
+						this->Get(i - 1, j + 1) +
+						this->Get(i,     j + 1) +
+						this->Get(i + 1, j - 1) +
+						this->Get(i - 1, j - 1) +
+						this->Get(i    , j - 1)
+					) / 8;
+
+					tempGrid->Set(i, j, meanNeighs);
+				}
+			}
+		}
+
+		//copia grade gerada para a grade principal
+		for(int i = -OG_WIDTH; i < OG_WIDTH; i++)
+			for(int j = -OG_HEIGHT; i < OG_HEIGHT; i++)
+				this->Set(i, j, tempGrid->Get(i, j));
+		
+	}
+
+	// this->ToStringPF();
+
+}
